@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "lib": ["es2022"],
+        "module": "es2022",
+        "moduleResolution": "node",
+        "baseUrl": "src",
+        "paths": {
+            "@utils/*": ["utils/*"],
+            "@controllers/*": ["controllers/*"]
+        },
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "declaration": true,
+        "sourceMap": true,
+        "importHelpers": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "allowJs": true,
+        "checkJs": false,
+        "resolveJsonModule": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noEmitOnError": true,
+        "isolatedModules": true,
+        "pretty": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules"]
+}
