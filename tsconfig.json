@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es2022",
         "lib": ["es2022"],
-        "module": "es2022",
+        "module": "commonjs",
         "moduleResolution": "node",
         "baseUrl": "src",
         "paths": {
@@ -16,8 +16,6 @@
         "importHelpers": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "allowJs": true,
-        "checkJs": false,
         "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
@@ -25,7 +23,7 @@
         "skipLibCheck": true,
         "strict": true,
         "noEmitOnError": true,
-        "isolatedModules": true,
+        "isolatedModules": false,
         "pretty": true
     },
     "include": ["src/**/*.ts"],

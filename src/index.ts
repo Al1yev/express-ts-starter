@@ -1,11 +1,8 @@
-import http from "http";
-import { App } from "app";
-import { config } from "dotenv";
+import { App } from './app';
+import { config } from 'dotenv';
 
-function bootstrap() {
-    config();
+config();
 
-    // Creating http server
-}
+const app = new App();
 
-bootstrap();
+app.listen();

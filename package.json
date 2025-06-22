@@ -1,17 +1,14 @@
 {
     "name": "express-ts",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "dist/index.js",
     "scripts": {
-        "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+        "dev": "tsx watch src/index.ts",
         "build": "tsc",
         "start": "node dist/index.js",
         "clean": "rm -rf dist",
-        "lint": "eslint . --ext .ts",
         "type-check": "tsc --noEmit",
-        "format": "prettier --write .",
-        "test": "jest",
-        "prepare": "husky install"
+        "format": "prettier --write ."
     },
     "keywords": [],
     "author": "",
@@ -34,6 +31,8 @@
         "prettier": "^3.5.3",
         "ts-node": "^10.9.2",
         "ts-node-dev": "^2.0.0",
+        "tsc-alias": "^1.8.16",
+        "tsx": "^4.20.3",
         "typescript": "^5.8.3"
     }
 }
