@@ -1,8 +1,22 @@
 import { App } from './app';
-import { config } from 'dotenv';
+import { VaultClient } from '@/config/vault';
+import { UserRouter } from '@routers';
 
-config();
+async function bootstrap() {
+    try {
+        // // Vault
+        // const vaultClient = await VaultClient.init();
+        // console.log(await VaultClient.getAllSecrets());
+        // // ----------------------------------------------
 
-const app = new App();
+        // Server
+        const app = new App([new UserRouter()]);
+        app.listen();
+        // ----------------------------------------------
+    } catch (error) {
+        console.error('[Bootstrap] Failed to start app:', error);
+        process.exit(1);
+    }
+}
 
-app.listen();
+bootstrap();

@@ -4,13 +4,6 @@
         "lib": ["es2022"],
         "module": "commonjs",
         "moduleResolution": "node",
-        "baseUrl": "src",
-        "paths": {
-            "@utils/*": ["utils/*"],
-            "@controllers/*": ["controllers/*"]
-        },
-        "rootDir": "./src",
-        "outDir": "./dist",
         "declaration": true,
         "sourceMap": true,
         "importHelpers": true,
@@ -24,7 +17,28 @@
         "strict": true,
         "noEmitOnError": true,
         "isolatedModules": false,
-        "pretty": true
+        "pretty": true,
+        "baseUrl": "src",
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "paths": {
+            "@/*": ["*"],
+            "@utils/*": ["utils/*"],
+            "@database/*": ["database/*"],
+            "@database": ["database/index.ts"],
+            "@controllers/*": ["controllers/*"],
+            "@controllers": ["controllers/index.ts"],
+            "@config/*": ["config/*"],
+            "@config": ["config/index.ts"],
+            "@exceptions/*": ["exceptions/*"],
+            "@exceptions": ["exceptions/index.ts"],
+            "@middlewares/*": ["middlewares/*"],
+            "@middlewares": ["middlewares/index.ts"],
+            "@routers/*": ["routers/*"],
+            "@routers": ["routers/index.ts"],
+            "@interfaces/*": ["interfaces/*"],
+            "@interfaces": ["interfaces/index.ts"]
+        }
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules"]
