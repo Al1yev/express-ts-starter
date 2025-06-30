@@ -15,8 +15,15 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "bcrypt": "^6.0.0",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.2",
+        "compression": "^1.8.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
         "dotenv": "^16.5.0",
         "express": "^5.1.0",
+        "helmet": "^8.1.0",
         "mongoose": "^8.16.1",
         "node-vault": "^0.10.5",
         "rimraf": "^6.0.1",
@@ -24,6 +31,10 @@
         "zod": "^3.25.67"
     },
     "devDependencies": {
+        "@types/bcrypt": "^5.0.2",
+        "@types/compression": "^1.8.1",
+        "@types/cookie-parser": "^1.4.9",
+        "@types/cors": "^2.8.19",
         "@types/express": "^5.0.3",
         "@types/node": "^24.0.3",
         "@types/node-vault": "^0.9.1",

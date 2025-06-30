@@ -1,1 +1,1 @@
-export { HttpException } from './HttpException';
+export { HttpException } from './http.exception';

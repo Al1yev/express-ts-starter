@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 
 config({ path: `.env.${process.env.NODE_ENV}` });
 
-export type TEnv = {
+export type EnvVars = {
     NODE_ENV: string;
     HOST: string;
     PORT: number;
@@ -28,4 +28,4 @@ if (!parsed.success) {
     process.exit(1);
 }
 
-export const env: TEnv = parsed.data;
+export const env: EnvVars = parsed.data;

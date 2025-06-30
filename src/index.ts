@@ -1,5 +1,5 @@
-import { App } from './app';
-import { VaultClient } from '@/config/vault';
+import { App } from '@/app';
+import { VaultClient } from '@config';
 import { UserRouter } from '@routers';
 
 async function bootstrap() {

@@ -15,4 +15,15 @@ export class UserController {
             next(error);
         }
     };
+
+    public createUser = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userData: User = req.body;
+            const createUserData: User = await this.user.createUser(userData);
+
+            res.status(201).json({ data: createUserData, message: 'created' });
+        } catch (error) {
+            next(error);
+        }
+    };
 }

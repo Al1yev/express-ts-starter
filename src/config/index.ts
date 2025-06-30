@@ -1,1 +1,2 @@
-export { env, TEnv } from '@/config/env';
+export { env, EnvVars } from './env.config';
+export { VaultClient } from './vault.config';
