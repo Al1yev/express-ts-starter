@@ -11,7 +11,7 @@ export const dbConnection = async () => {
         },
     };
 
-    if (NODE_ENV !== 'production') {
+    if (NODE_ENV !== 'prod') {
         set('debug', true);
     }
 

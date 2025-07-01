@@ -8,7 +8,7 @@ export class UserController {
 
     public getUsers = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const findAllUsersData: User[] | HttpException = await this.user.findAllUser();
+            const findAllUsersData: User[] = await this.user.findAllUser();
 
             res.status(200).json({ data: findAllUsersData, message: 'findAll' });
         } catch (error) {

@@ -4,7 +4,7 @@ import { User } from '@interfaces';
 import { UserDocument, UserModel } from '@models';
 
 export class UserService {
-    public async findAllUser(): Promise<UserDocument[] | HttpException> {
+    public async findAllUser(): Promise<UserDocument[]> {
         const users: UserDocument[] = await UserModel.find();
         return users;
     }
