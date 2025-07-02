@@ -13,6 +13,10 @@ const UserSchema = new Schema<User & Document>({
         type: String,
         required: true,
     },
+    createdAt: {
+        type: Date,
+        default: new Date(),
+    },
 });
 
 export const UserModel = model<User & Document>('User', UserSchema);

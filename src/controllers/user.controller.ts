@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserService } from '@/services';
-import { User } from '@/interfaces';
-import { HttpException } from '@/exceptions';
+import { UserService } from '@services';
+import { User } from '@interfaces';
 
 export class UserController {
     public user = new UserService();
@@ -10,7 +9,7 @@ export class UserController {
         try {
             const findAllUsersData: User[] = await this.user.findAllUser();
 
-            res.status(200).json({ data: findAllUsersData, message: 'findAll' });
+            res.success(findAllUsersData);
         } catch (error) {
             next(error);
         }

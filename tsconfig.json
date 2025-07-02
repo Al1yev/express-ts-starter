@@ -20,8 +20,8 @@
         "isolatedModules": false,
         "pretty": true,
         "baseUrl": "src",
-        "rootDir": "./src",
-        "outDir": "./dist",
+        "rootDir": "src",
+        "outDir": "dist",
         "paths": {
             "@/*": ["*"],
             "@config/*": ["config/*"],
@@ -30,8 +30,8 @@
             "@controllers": ["controllers/index.ts"],
             "@database/*": ["database/*"],
             "@database": ["database/index.ts"],
-            "@dto/*": ["dtos/*"],
-            "@dto": ["dtos/index.ts"],
+            "@dtos/*": ["dtos/*"],
+            "@dtos": ["dtos/index.ts"],
             "@exceptions/*": ["exceptions/*"],
             "@exceptions": ["exceptions/index.ts"],
             "@interfaces/*": ["interfaces/*"],
@@ -48,6 +48,6 @@
             "@utils": ["utils/index.ts"]
         }
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "src/**/*.json", ".env"],
     "exclude": ["node_modules"]
 }

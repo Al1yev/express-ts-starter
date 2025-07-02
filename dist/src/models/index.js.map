@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/models/index.ts"],"sourcesContent":["export { UserModel, UserDocument } from './user.model';\n"],"names":["UserDocument","UserModel"],"mappings":";;;;;;;;;;;QAAoBA;eAAAA,uBAAY;;QAAvBC;eAAAA,oBAAS;;;2BAAsB"}

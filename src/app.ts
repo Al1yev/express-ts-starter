@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser';
 import { env } from '@config';
 import { Routes } from '@interfaces';
 import { dbConnection } from '@database';
-import { ErrorMiddleware } from '@middlewares';
+import { ErrorMiddleware, ResponseMiddleware } from '@middlewares';
 import { padBoth } from '@utils';
 
 export class App {
@@ -45,6 +45,7 @@ export class App {
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cookieParser());
+        this.app.use(ResponseMiddleware);
     }
 
     private async initializeRouters(routes: Routes[]) {

@@ -14,7 +14,7 @@ export const ErrorMiddleware = (
         console.error(
             `[${req.method}] ${req.path} >> StatusCode:: ${status}, Message:: ${message}`,
         );
-        res.status(status).json({ success: false, message });
+        res.status(status).json({ success: false, message, data: null });
     } catch (error) {
         next(error);
     }

@@ -1,0 +1,51 @@
+{
+    "jsc": {
+        "target": "es2022",
+        "parser": {
+            "syntax": "typescript",
+            "tsx": false,
+            "dynamicImport": true,
+            "decorators": true
+        },
+        "transform": {
+            "legacyDecorator": true,
+            "decoratorMetadata": true
+        },
+        "externalHelpers": false,
+        "keepClassNames": true,
+        "loose": false,
+        "minify": {
+            "compress": false,
+            "mangle": false
+        },
+        "baseUrl": "src",
+        "paths": {
+            "@/*": ["*"],
+            "@config": ["config/index.ts"],
+            "@config/*": ["config/*"],
+            "@controllers": ["controllers/index.ts"],
+            "@controllers/*": ["controllers/*"],
+            "@database": ["database/index.ts"],
+            "@database/*": ["database/*"],
+            "@dtos": ["dtos/index.ts"],
+            "@dtos/*": ["dtos/*"],
+            "@exceptions": ["exceptions/index.ts"],
+            "@exceptions/*": ["exceptions/*"],
+            "@interfaces": ["interfaces/index.ts"],
+            "@interfaces/*": ["interfaces/*"],
+            "@middlewares": ["middlewares/index.ts"],
+            "@middlewares/*": ["middlewares/*"],
+            "@models": ["models/index.ts"],
+            "@models/*": ["models/*"],
+            "@routers": ["routers/index.ts"],
+            "@routers/*": ["routers/*"],
+            "@services": ["services/index.ts"],
+            "@services/*": ["services/*"],
+            "@utils": ["utils/index.ts"],
+            "@utils/*": ["utils/*"]
+        }
+    },
+    "module": {
+        "type": "commonjs"
+    }
+}

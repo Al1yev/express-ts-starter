@@ -7,9 +7,9 @@ export type EnvVars = {
     NODE_ENV: string;
     HOST: string;
     PORT: number;
-    DB_HOST?: string;
-    DB_PORT?: number;
-    DB_NAME?: string;
+    DB_HOST: string;
+    DB_PORT: number;
+    DB_NAME: string;
 };
 
 const envSchema = z.object({
@@ -28,4 +28,4 @@ if (!parsed.success) {
     process.exit(1);
 }
 
-export const env: EnvVars = parsed.data;
+export const env = parsed.data;

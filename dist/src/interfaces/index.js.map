@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../src/interfaces/index.ts"],"sourcesContent":["export { Routes } from './router.interface';\nexport { User } from './user.interface';\n"],"names":["Routes","User"],"mappings":";;;;;;;;;;;QAASA;eAAAA,uBAAM;;QACNC;eAAAA,mBAAI;;;iCADU;+BACF"}
