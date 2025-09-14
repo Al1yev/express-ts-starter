@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/controllers/index.ts"],"sourcesContent":["export { UserController } from './user.controller';\n"],"names":["UserController"],"mappings":";;;;+BAASA;;;eAAAA,8BAAc;;;gCAAQ"}

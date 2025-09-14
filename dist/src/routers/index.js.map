@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../src/routers/index.ts"],"sourcesContent":["export { UserRouter } from './user.router';\n"],"names":["UserRouter"],"mappings":";;;;+BAASA;;;eAAAA,sBAAU;;;4BAAQ"}
