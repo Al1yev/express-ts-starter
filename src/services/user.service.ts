@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/require-await --
+   Skelet: metodlar hali implementatsiya qilinmagan, shuning uchun parametrlar
+   ataylab ishlatilmaydi va `async` ichida `await` yo'q. CLAUDE.md ga qarang.
+   Logika yozilganda bu qatorni o'chiring. */
 import { Service } from 'typedi';
 import { UserDocument } from '@models';
 import { User } from '@interfaces';

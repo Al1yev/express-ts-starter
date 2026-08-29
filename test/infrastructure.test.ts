@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import request from 'supertest';
-import mongoose from 'mongoose';
+import mongoose, { ConnectionStates } from 'mongoose';
 import { Container, Service } from 'typedi';
 import { IsEmail } from 'class-validator';
 import { env } from '@config';
@@ -111,7 +111,7 @@ describe('test infratuzilmasi', () => {
 
     describe('mongodb-memory-server', () => {
         it('ulangan va yozib-o‘qiy oladi', async () => {
-            expect(mongoose.connection.readyState).toBe(1);
+            expect(mongoose.connection.readyState).toBe(ConnectionStates.connected);
 
             await ProbeModel.create({ tag: 'salom' });
 

@@ -14,7 +14,12 @@ Har birini mavjud `user.*` fayllaridan nusxa ol — ular shu loyihaning namunasi
 1. `src/interfaces/<name>.interface.ts` — `_id?`, `createdAt?`, `updatedAt?` va TODO
 2. `src/models/<name>.model.ts` — `HydratedDocument` tipi, `timestamps: true`, `toJSON` transform (`__v` olib tashlanadi). Maxfiy maydonlar uchun `select: false` ishlat.
 3. `src/dtos/<name>.dto.ts` — `Create<Name>Dto` (kerak bo'lsa `Update<Name>Dto` ham)
-4. `src/services/<name>.service.ts` — `@Service()` dekoratori bilan; metod tanalari `throw new Error('Not implemented')`
+4. `src/services/<name>.service.ts` — `@Service()` dekoratori bilan; metod tanalari `throw new Error('Not implemented')`.
+   Fayl boshiga skelet izohini qo'y, aks holda `npm run lint` yiqiladi (ishlatilmagan parametrlar + `await`siz `async`):
+    ```ts
+    /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/require-await --
+       Skelet: metodlar hali implementatsiya qilinmagan. Logika yozilganda bu qatorni o'chiring. */
+    ```
 5. `src/controllers/<name>.controller.ts` — `Container.get(<Name>Service)`, har metod `try/catch` + `next(error)`, javob `res.success(data, status?, message?)`
 6. `src/routers/<name>.router.ts` — `Routes` interface'ini implement qiladi, `ValidationMiddleware(Dto)` yozuv operatsiyalarida
 
@@ -33,4 +38,4 @@ Har birini mavjud `user.*` fayllaridan nusxa ol — ular shu loyihaning namunasi
 
 ## Yakunda
 
-`npm run type-check` ni ishga tushir va xatosiz o'tishiga ishonch hosil qil. Keyin `PROGRESS.md` ga qisqa yozuv qo'sh: qaysi entity qo'shildi va qaysi fayllar yaratildi.
+`npm run type-check` va `npm run lint` ni ishga tushir — ikkalasi ham xatosiz o'tishi shart. Keyin `PROGRESS.md` ga qisqa yozuv qo'sh: qaysi entity qo'shildi va qaysi fayllar yaratildi.

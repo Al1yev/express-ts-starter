@@ -1,4 +1,4 @@
-import { connect, connection, set } from 'mongoose';
+import { ConnectionStates, connect, connection, set } from 'mongoose';
 import { env } from '@config';
 
 export const dbConnection = async () => {
@@ -16,10 +16,10 @@ export const dbConnection = async () => {
 };
 
 /**
- * Ulanish haqiqatan tayyor-yo'qligi. Mongoose `readyState`: 0 = uzilgan,
- * 1 = ulangan, 2 = ulanmoqda, 3 = uzilmoqda — faqat `1` da so'rov bajarish mumkin.
+ * Ulanish haqiqatan tayyor-yo'qligi. `readyState` faqat `connected` bo'lganda
+ * so'rov bajarish mumkin (`connecting` va `disconnecting` da emas).
  *
  * Ulanish holati shu modulga tegishli, shuning uchun router'lar mongoose'ni
  * to'g'ridan-to'g'ri import qilmasin.
  */
-export const isDbConnected = (): boolean => connection.readyState === 1;
+export const isDbConnected = (): boolean => connection.readyState === ConnectionStates.connected;

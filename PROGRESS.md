@@ -136,6 +136,64 @@ Ikkala holatda ham commit yaratilmadi. Probe fayli o'chirildi.
 
 ---
 
+### 10. ESLint ishlaydigan holatga keltirildi — ro'yxatdagi oxirgi band
+
+`eslint@9` o'rnatilgan edi, lekin config eski `.eslintrc.json` formatida — `npx eslint .` "couldn't find eslint.config.js" bilan **jimgina yiqilardi**. Ya'ni loyihada statik tahlil umuman yo'q edi.
+
+**Qaror:** tip-aware lint (`recommendedTypeChecked`), chunki sintaksis darajasidagi tekshiruv `no-floating-promises` kabi haqiqiy buglarni ko'rmaydi.
+
+**Dependency'lar:** `+typescript-eslint`, `+@eslint/js`, `+globals`; `-@typescript-eslint/parser`, `-@typescript-eslint/eslint-plugin` (meta-paket qamraydi). `.eslintrc.json` o'chirildi. Script'lar: `lint`, `lint:fix` (hook'ga qo'shilmadi — `pre-commit` allaqachon ~13s).
+
+**`@eslint/js` ni pin qilish kerak bo'ldi.** Oxirgi versiyasi 10.x va u `eslint@^10` talab qiladi, bizda esa 9.29 — `npm install` `ERESOLVE` bilan yiqildi. `@eslint/js@^9.29.0` bilan hal bo'ldi. Major versiya `eslint` bilan bir xil bo'lishi shart.
+
+**O'lchov birinchi, sozlash keyin.** Sozlamasiz config bilan `npx eslint . -f json` ishlatilib, xatolar qoida va zona bo'yicha sanaldi: **62 ta** (`src` 29, `test` 33). Taqsimot:
+
+| Qoida                           | src | test |
+| ------------------------------- | --- | ---- |
+| `no-unsafe-member-access`       | 2   | 24   |
+| `no-unused-vars`                | 7   | 0    |
+| `require-await`                 | 6   | 0    |
+| `no-unsafe-argument`            | 3   | 3    |
+| `no-unsafe-enum-comparison`     | 1   | 4    |
+| `no-unsafe-assignment`          | 3   | 1    |
+| `no-explicit-any`               | 4   | 0    |
+| `no-floating-promises`          | 2   | 0    |
+| `no-namespace`                  | 1   | 0    |
+| `no-unnecessary-type-assertion` | 0   | 1    |
+
+`no-unsafe-*` oilasi jami 40 ta va uning **80% i testlarda** — manba `@types/superagent` dagi `body: any`, bizning kodimiz emas.
+
+**Sozlash — global emas, nishonli.** `warn` ishlatilmadi: 40 ta doimiy ogohlantirish shovqinga aylanadi va o'qilmay qoladi. Buning o'rniga glob override'lar: `test/**` da `no-unsafe-*` o'chirildi (supertest chegarasi), `validation.middleware.ts` da (class-transformer chegarasi), `controllers/*` da `no-unsafe-assignment` (Express'da `ReqBody = any`).
+
+**Linter topgan HAQIQIY nuqsonlar — hammasi tuzatildi:**
+
+| Fayl                                       | Topilma                                                                                                                    | Tuzatish                                                                              |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `src/app.ts`                               | `initializeRouters` `async` deb belgilangan, ichi esa sof sinxron `forEach`, ustiga konstruktordan `await`siz chaqirilardi | `async` olib tashlandi — `no-floating-promises` va `require-await` ikkalasi ham ketdi |
+| `src/utils/text.utils.ts`                  | `endPadding` hisoblanardi, lekin hech qayerda ishlatilmasdi                                                                | O'lik qator o'chirildi                                                                |
+| `src/database/index.ts` + 3 ta test helper | `connection.readyState === 1` — enum'ni raqam bilan solishtirish                                                           | `ConnectionStates.connected` / `.disconnected`                                        |
+| `test/error.middleware.test.ts:21`         | Keraksiz `as`                                                                                                              | `--fix` bilan                                                                         |
+| `src/server.ts`                            | `bootstrap()` await'siz (ichida `try/catch` bor, ya'ni xavfsiz)                                                            | `void bootstrap();` — niyat aniq bo'lsin                                              |
+
+`res.success(data: any)` → `data: unknown` ham qilindi: `unknown` parametr sifatida hamma narsani qabul qiladi, shuning uchun 6 ta chaqiruv joyi buzilmadi, `response.middleware.ts` uchun override bloki esa keraksiz bo'ldi.
+
+**Skelet servislar** fayl darajasidagi `eslint-disable` izohi bilan hal qilindi, config'dagi glob override bilan **emas** — override butun service qatlamini doimiy ko'r qilardi, izoh esa implementatsiya yozilganda o'chiriladi. `/scaffold` buyrug'i ham yangilandi, endi generatsiya qilingan service'ga shu izohni qo'shadi.
+
+**Tekshirilgan faktlar** (`node_modules` manbasidan, taxmin emas):
+
+- `projectService: true` bu loyihada **ishlamaydi** — `test/` fayllari parse error beradi (`tsconfig.test.json` nomi standart emas, root config `test/` ni qamramaydi). `allowDefaultProject` ham yaramaydi: glob'da `**` taqiqlangan. Yechim — `project: ['./tsconfig.json', './tsconfig.test.json']`.
+- `no-misused-promises` **0 xato**: Express 5 da `RequestHandler` → `void | Promise<void>`. Express 4 da bu qoida barcha `async` handler'larda portlardi.
+- `eslint-config-prettier` **kerak emas**: ESLint 9 `recommended` va typescript-eslint `recommendedTypeChecked` da formatlash qoidalari yo'q (v6 da `@stylistic` ga ko'chgan).
+- `globals` paketida `vitest` kaliti yo'q va kerak ham emas — `tsconfig.test.json` dagi `types: ["vitest/globals"]` yetadi.
+
+**Natija:** 62 → **0**. `npm run lint` exit 0, birorta warning ham yo'q.
+
+**Mutatsiya bilan tekshirildi:** `src/app.ts` ga `await`siz chaqiruv va ishlatilmagan o'zgaruvchi qo'shilganda lint ikkalasini ham ushladi (`no-floating-promises`, `no-unused-vars`), tiklangandan keyin yana toza.
+
+`CLAUDE.md` dagi "ma'lum tooling muammolari" ro'yxati **butunlay bo'shadi** va olib tashlandi — o'rniga "Lint" bo'limi yozildi.
+
+---
+
 ## 2026-08-29 — `tester` agenti uchun test infratuzilmasi
 
 **Maqsad:** avvalgi sessiyada uchta agent (`lead`, `back`, `tester`) yaratilgan edi, lekin `tester` da ishlash uchun **hech qanday sharoit yo'q edi** — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi test runner'da ishlamasdi. Uchala to'siq ham hal qilindi va agentlarning uchalasi ham haqiqiy topshiriq bilan sinovdan o'tkazildi.

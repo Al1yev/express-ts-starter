@@ -87,6 +87,8 @@ Formatlash tekshiruvi `pre-commit` da, chunki `.claude/hooks/format.mjs` faqat C
 | `npm run test:watch`    | Vitest watch rejimida                                                           |
 | `npm run test:coverage` | v8 coverage → `coverage/`                                                       |
 | `npm run type-check`    | `tsc --noEmit` (src) **va** `tsc -p tsconfig.test.json` (src + test) — ishlaydi |
+| `npm run lint`          | ESLint 9 flat config, tip ma'lumotli — ishlaydi                                 |
+| `npm run lint:fix`      | `eslint . --fix`                                                                |
 | `npm run build`         | swc → `dist/src/`                                                               |
 | `npm run clean`         | `rimraf dist` — Windows'da ham ishlaydi                                         |
 | `npm run format`        | prettier                                                                        |
@@ -113,9 +115,17 @@ Bilish kerak bo'lgan uchta nozik joy:
 
 Integratsiya testida `app.listen()` chaqirmang: `createTestApp([new SomeRouter()])` → `supertest(app)`. To'liq app orqali o'tish shart, chunki `res.success()` va 404/error kontrakti middleware'larda yig'iladi.
 
-## Ma'lum tooling muammolari (hali tuzatilmagan)
+## Lint
 
-- **ESLint umuman ishlamaydi** — v9 o'rnatilgan, lekin config eski `.eslintrc.json` formatida. `eslint.config.js` (flat config) kerak. `lint` script'i ham yo'q.
+`eslint.config.mjs` — ESLint 9 flat config, **tip ma'lumotli** (`recommendedTypeChecked`). `.mjs` majburiy: loyiha CommonJS, `.js` ichida ESM sintaksisi yiqiladi.
+
+Uchta narsani bilib qo'ying:
+
+1. **`projectService: true` ishlatmang.** U faylning eng yaqin `tsconfig.json` ini qidiradi; root config faqat `src/**` ni qamraydi va `tsconfig.test.json` nomi standart emas, shuning uchun `test/` dagi fayllar parse error beradi. `allowDefaultProject` ham yaramaydi — glob'da `**` taqiqlangan. Config'da ikkala loyiha aniq ko'rsatilgan.
+2. **`no-unsafe-*` oilasi `test/` da o'chirilgan.** `supertest` javobining `body` tipi `any` (`@types/superagent`) — bu kutubxona chegarasi, bizning kodimiz emas. `src/` da qoida kuchida.
+3. **Skelet servislar fayl darajasidagi `eslint-disable` izohi bilan.** Config'da glob override **ataylab ishlatilmagan** — u butun service qatlamini doimiy ko'r qilardi. Izoh esa implementatsiya yozilganda o'chiriladi. `/scaffold` yangi servislarga uni o'zi qo'shadi.
+
+Formatlash butunlay Prettier'da: ESLint'da birorta stylistic qoida yo'q, shuning uchun `eslint-config-prettier` ham kerak emas.
 
 ## Kod uslubi
 

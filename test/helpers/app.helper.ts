@@ -1,5 +1,5 @@
 import type { Application } from 'express';
-import mongoose from 'mongoose';
+import mongoose, { ConnectionStates } from 'mongoose';
 import { App } from '@/app';
 import type { Routes } from '@interfaces';
 
@@ -16,7 +16,7 @@ export const createTestApp = async (routes: Routes[]): Promise<Application> => {
 
     // Mongoose'ning default ulanishi bitta: allaqachon ulangan bo'lsa
     // `initialize()` "openUri() on active connection" xatosini beradi.
-    if (mongoose.connection.readyState === 0) {
+    if (mongoose.connection.readyState === ConnectionStates.disconnected) {
         await app.initialize();
         mongoose.set('debug', false);
     }

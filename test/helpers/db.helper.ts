@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { ConnectionStates } from 'mongoose';
 import { dbConnection } from '@database';
 
 /**
@@ -8,7 +8,7 @@ import { dbConnection } from '@database';
  * testlar `@config` → URL yig'ilishi → `mongoose.connect` yo'lini ham qamraydi.
  */
 export const connectTestDb = async (): Promise<void> => {
-    if (mongoose.connection.readyState !== 0) return;
+    if (mongoose.connection.readyState !== ConnectionStates.disconnected) return;
 
     await dbConnection();
     // `dbConnection()` prod'dan boshqa muhitda `set('debug', true)` qiladi —
@@ -18,7 +18,7 @@ export const connectTestDb = async (): Promise<void> => {
 
 /** Har bir testdan keyin chaqiring — testlar bir-biridan mustaqil bo'lishi shart. */
 export const clearTestDb = async (): Promise<void> => {
-    if (mongoose.connection.readyState === 0) return;
+    if (mongoose.connection.readyState === ConnectionStates.disconnected) return;
 
     const collections = Object.values(mongoose.connection.collections);
     await Promise.all(collections.map((collection) => collection.deleteMany({})));
@@ -26,7 +26,7 @@ export const clearTestDb = async (): Promise<void> => {
 
 /** Test faylining oxirida. Bazani tashlab, ulanishni yopadi. */
 export const disconnectTestDb = async (): Promise<void> => {
-    if (mongoose.connection.readyState === 0) return;
+    if (mongoose.connection.readyState === ConnectionStates.disconnected) return;
 
     await mongoose.connection.dropDatabase();
     await mongoose.disconnect();

@@ -18,7 +18,7 @@ import { clearTestDb, createTestApp, disconnectTestDb } from './helpers';
  * Middleware `env.NODE_ENV` ni har so'rovda o'qiydi, shuning uchun bitta app bilan
  * turli muhitlarni sinash mumkin.
  */
-const envOverride = vi.hoisted(() => ({ nodeEnv: 'test' as 'dev' | 'prod' | 'test' }));
+const envOverride = vi.hoisted(() => ({ nodeEnv: 'test' }));
 
 // DIQQAT: bu yerda '@config' alias'i ISHLAMAYDI. Haqiqiy import'lardagi alias'ni
 // swc (`.swcrc` dagi `jsc.paths`) nisbiy yo'lga aylantiradi, `vi.mock()` ning satr

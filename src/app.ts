@@ -53,7 +53,7 @@ export class App {
         this.app.use(ResponseMiddleware);
     }
 
-    private async initializeRouters(routes: Routes[]) {
+    private initializeRouters(routes: Routes[]) {
         routes.forEach((route) => {
             this.app.use('/', route.router);
         });
