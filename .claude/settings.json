@@ -1,0 +1,38 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(npm run *)",
+            "Bash(npx tsc*)",
+            "Bash(npx swc*)",
+            "Bash(npx prettier*)",
+            "Bash(git status*)",
+            "Bash(git diff*)",
+            "Bash(git log*)",
+            "Bash(git show*)",
+            "Bash(docker ps*)",
+            "Bash(docker logs mongo*)",
+            "Bash(docker start mongo)",
+            "Bash(docker stop mongo)"
+        ],
+        "deny": [
+            "Read(./.env.prod)",
+            "Bash(git push --force*)",
+            "Bash(git push -f *)"
+        ]
+    },
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Write|Edit",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "node .claude/hooks/format.mjs",
+                        "timeout": 30,
+                        "statusMessage": "Prettier bilan formatlanmoqda..."
+                    }
+                ]
+            }
+        ]
+    }
+}
