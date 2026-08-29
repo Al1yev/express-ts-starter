@@ -57,6 +57,14 @@ Default: `skipMissingProperties=false`, `whitelist=true`, `forbidNonWhitelisted=
 
 **Env** — `src/config/env.config.ts`, zod bilan validatsiya. `EnvVars` tipi `z.infer` orqali schema'dan olinadi — qo'lda dublikat yozmang. Yangi o'zgaruvchi = `envSchema` ga qo'shish + `.env.example` ni yangilash. `NODE_ENV` berilmasa `dev` ishlatiladi.
 
+## `GET /health`
+
+Readiness probe. DB ulanishi bo'lmasa (`mongoose` `readyState !== 1`) `503 Database unavailable` qaytaradi — `200 ok` emas, chunki DB'siz servis hech qanday foydali ish qila olmaydi. Ulanish holati `@database` dagi `isDbConnected()` orqali o'qiladi; router'lar mongoose'ni to'g'ridan-to'g'ri import qilmasin.
+
+Muvaffaqiyatli javob: `{ status: 'ok', db: 'up', uptime, env }`.
+
+⚠️ **Prod'da xabar yo'qoladi.** `ErrorMiddleware` prod'da har qanday 5xx ni `'Internal server error'` ga aylantiradi, shu jumladan bu `HttpException(503, ...)` ni ham. **Status kodi saqlanadi**, ya'ni orkestrator uchun muammo yo'q, lekin log'ga qaragan odam sababni javobdan ko'rmaydi.
+
 ## Script'lar
 
 | Buyruq                  | Izoh                                                                            |

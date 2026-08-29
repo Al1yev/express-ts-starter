@@ -1,6 +1,7 @@
 import request from 'supertest';
+import mongoose from 'mongoose';
 import { HealthRouter } from '@routers';
-import { createTestApp, disconnectTestDb } from './helpers';
+import { connectTestDb, createTestApp, disconnectTestDb } from './helpers';
 
 /**
  * `GET /health` integratsiya testi.
@@ -41,10 +42,11 @@ describe('GET /health', () => {
         expect(res.body.message).toBe('OK');
     });
 
-    it('data.status "ok" bo‘ladi', async () => {
+    it('data.status "ok" va data.db "up" bo‘ladi', async () => {
         const res = await request(app).get('/health');
 
         expect(res.body.data.status).toBe('ok');
+        expect(res.body.data.db).toBe('up');
     });
 
     it('data.env joriy muhitni aks ettiradi (test muhitida "test")', async () => {
@@ -91,5 +93,34 @@ describe('GET /health', () => {
         expect(res.status).toBe(404);
         expect(res.body.success).toBe(false);
         expect(res.body.data).toBeNull();
+    });
+
+    describe('DB uzilgan holatda', () => {
+        // Mock emas, HAQIQIY uzilish: readiness probe'ning butun ma'nosi
+        // mongoose'ning haqiqiy holatini aks ettirishida. Mock qo'yilsa test
+        // implementatsiyaga emas, o'z soxta holatiga bog'lanib qolardi.
+        beforeAll(async () => {
+            await mongoose.disconnect();
+        });
+
+        afterAll(async () => {
+            await connectTestDb();
+        });
+
+        it('503 qaytaradi — `200 ok` emas', async () => {
+            const res = await request(app).get('/health');
+
+            expect(res.status).toBe(503);
+        });
+
+        it('loyihaning xato kontraktiga mos keladi', async () => {
+            const res = await request(app).get('/health');
+
+            expect(res.body).toEqual({
+                success: false,
+                message: 'Database unavailable',
+                data: null,
+            });
+        });
     });
 });

@@ -49,6 +49,38 @@ Ikkita nozik joy:
 
 ---
 
+### 6. `/health` readiness probe'ga aylantirildi
+
+**Muammo:** endpoint DB holatini umuman o'qimasdi — Mongo o'lgan bo'lsa ham `200 ok` qaytarardi, ya'ni orkestrator uchun yolg'on signal edi.
+
+**O'zgarish:**
+
+| Fayl                           | Nima                                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `src/database/index.ts`        | `isDbConnected()` qo'shildi — `connection.readyState === 1`                                                   |
+| `src/routers/health.router.ts` | Ulanish yo'q bo'lsa `HttpException(503, 'Database unavailable')`; muvaffaqiyatda javobga `db: 'up'` qo'shildi |
+| `test/health.router.test.ts`   | Uzilgan holat uchun 2 ta test                                                                                 |
+
+**Qaror:** `readyState` router'dan emas, `@database` dan o'qiladi — ulanish holati o'sha modulning mas'uliyati, router'lar mongoose'ga to'g'ridan-to'g'ri tegmasligi kerak.
+
+**Testda mock ishlatilmadi.** Uzilgan holat haqiqiy `mongoose.disconnect()` bilan sinaladi, `afterAll` da `connectTestDb()` qaytaradi. Readiness probe'ning butun ma'nosi mongoose'ning haqiqiy holatini aks ettirishida — mock qo'yilsa test o'z soxta holatiga bog'lanib qolardi.
+
+**Mutatsiya bilan tekshirildi:** guard vaqtincha olib tashlanganda ikkala yangi test ham kutilgan sababdan yiqildi (`2 failed | 8 passed`), ya'ni ular bo'sh o'tmaydi.
+
+**Jonli sikl (Mongo konteyneri bilan):**
+
+| Bosqich              | Natija                                                                    |
+| -------------------- | ------------------------------------------------------------------------- |
+| Mongo yoqiq          | `200` — `{"status":"ok","db":"up","uptime":3.6,"env":"dev"}`              |
+| `docker stop mongo`  | `503` — `{"success":false,"message":"Database unavailable","data":null}`  |
+| `docker start mongo` | `200` — o'sha jarayon, uptime uzluksiz 31.9s (mongoose o'zi qayta ulandi) |
+
+**Bilib qo'yish kerak:** prod'da `ErrorMiddleware` har qanday 5xx ni `'Internal server error'` ga aylantiradi, shu jumladan bu `503` ni ham. **Status kodi saqlanadi**, ya'ni orkestrator uchun muammo yo'q, lekin javobdan sabab ko'rinmaydi. Bu quyidagi 7-raqamli ochiq savolga borib taqaladi.
+
+**Tekshirildi:** `npm run type-check` exit 0, `npm test` **57/57**, shuffle ikki urug'da barqaror, `prettier --check` toza.
+
+---
+
 ## 2026-08-29 — `tester` agenti uchun test infratuzilmasi
 
 **Maqsad:** avvalgi sessiyada uchta agent (`lead`, `back`, `tester`) yaratilgan edi, lekin `tester` da ishlash uchun **hech qanday sharoit yo'q edi** — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi test runner'da ishlamasdi. Uchala to'siq ham hal qilindi va agentlarning uchalasi ham haqiqiy topshiriq bilan sinovdan o'tkazildi.
@@ -120,7 +152,7 @@ Jonli server bilan `GET /health` **asosiy sessiya tomonidan alohida sinalmadi** 
 
 ### 6. Ochiq savollar
 
-**`/health` readiness probe bo'lsinmi?** Hozir endpoint DB holatini o'qimaydi — Mongo o'lgan bo'lsa ham `200 ok` qaytaradi. Agar u orkestrator uchun readiness probe bo'lishi kerak bo'lsa, `mongoose.connection.readyState` tekshirilib `503` qaytarilishi kerak.
+~~**`/health` readiness probe bo'lsinmi?**~~ — **HAL QILINDI**, yuqoridagi "Tooling muammolarini ketma-ket tuzatish" yozuvining 6-bosqichiga qarang.
 
 **`ErrorMiddleware` da 5xx `HttpException` maskalanadi — shundaymi kerak?** Hozirgi shart faqat status'ga qaraydi:
 
