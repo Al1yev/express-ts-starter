@@ -20,7 +20,9 @@
         "pretty": true,
         "baseUrl": "src",
         "rootDir": "src",
-        "outDir": "dist",
+        // `build` (swc) `dist/src/` ga chiqaradi va `main`/`start` ham shu yo'lni
+        // ko'rsatadi. `build:tsc` ham xuddi shu joyga chiqarishi uchun `dist/src`.
+        "outDir": "dist/src",
         "paths": {
             "@/*": ["*"],
             "@config/*": ["config/*"],

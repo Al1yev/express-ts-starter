@@ -81,6 +81,16 @@ Ikkita nozik joy:
 
 ---
 
+### 7. `build:tsc` ham `dist/src/` ga chiqaradigan qilindi
+
+**Muammo:** `build` (swc) `dist/src/` ga, `build:tsc` (`tsc` + `tsc-alias`) esa `dist/` ildiziga chiqarardi. `main` va `start` `dist/src/server.js` ni ko'rsatgani uchun `build:tsc` chiqishi ular uchun **topilmasdi**.
+
+**O'zgarish:** `tsconfig.json` da `outDir: "dist"` → `"dist/src"`. `rootDir: "src"` o'zgarmadi.
+
+**Tekshirildi:** `npm run build:tsc` endi `dist/src/` ga chiqaradi; `tsc-alias` alias'larni to'g'ri hal qildi (`dist/src/` da birorta `require("@...")` qolmadi); kompilyatsiya qilingan server `node dist/src/server.js` bilan ko'tarildi va `GET /health` → `200` qaytardi. `npm run type-check` exit 0, `npm test` 57/57.
+
+---
+
 ## 2026-08-29 — `tester` agenti uchun test infratuzilmasi
 
 **Maqsad:** avvalgi sessiyada uchta agent (`lead`, `back`, `tester`) yaratilgan edi, lekin `tester` da ishlash uchun **hech qanday sharoit yo'q edi** — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi test runner'da ishlamasdi. Uchala to'siq ham hal qilindi va agentlarning uchalasi ham haqiqiy topshiriq bilan sinovdan o'tkazildi.
