@@ -8,22 +8,26 @@ import { env } from '@config';
 import { Routes } from '@interfaces';
 import { dbConnection } from '@database';
 import { ErrorMiddleware, ResponseMiddleware } from '@middlewares';
+import { HttpException } from '@exceptions';
 import { padBoth } from '@utils';
 
 export class App {
     public app: express.Application;
     public env: string;
-    public port: string | number;
+    public port: number;
 
     constructor(routes: Routes[]) {
         this.app = express();
-        this.port = env.PORT ?? 5000;
-        this.env = env.NODE_ENV || 'dev';
+        this.port = env.PORT;
+        this.env = env.NODE_ENV;
 
-        this.connectToDatabase();
         this.initializeMiddlewares();
         this.initializeRouters(routes);
         this.initializeErrorHandling();
+    }
+
+    public async initialize(): Promise<void> {
+        await this.connectToDatabase();
     }
 
     public listen() {
@@ -56,6 +60,9 @@ export class App {
     }
 
     public initializeErrorHandling() {
+        this.app.use((req, _res, next) =>
+            next(new HttpException(404, `Route ${req.originalUrl} not found`)),
+        );
         this.app.use(ErrorMiddleware);
     }
 }

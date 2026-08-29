@@ -5,6 +5,7 @@ async function bootstrap() {
     try {
         // Server
         const app = new App([new UserRouter()]);
+        await app.initialize();
         app.listen();
         // ----------------------------------------------
     } catch (error) {

@@ -3,3 +3,6 @@
 !/.env.example
 /process.txt
 /dist
+
+# Claude Code - shaxsiy sozlamalar
+.claude/settings.local.json

@@ -45,7 +45,7 @@ export class UserController {
             const userId: string = req.params.id;
             const deleteUserData: UserDocument = await this.user.deleteUser(userId);
 
-            res.success(deleteUserData, 204, 'deleted');
+            res.success(deleteUserData, 200, 'deleted');
         } catch (error) {
             next(error);
         }

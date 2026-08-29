@@ -1,16 +1,9 @@
 import { z } from 'zod';
 import { config } from 'dotenv';
 
-config({ path: `.env.${process.env.NODE_ENV}` });
+const nodeEnv = process.env.NODE_ENV ?? 'dev';
 
-export type EnvVars = {
-    NODE_ENV: string;
-    HOST: string;
-    PORT: number;
-    DB_HOST: string;
-    DB_PORT: number;
-    DB_NAME: string;
-};
+config({ path: `.env.${nodeEnv}` });
 
 const envSchema = z.object({
     NODE_ENV: z.enum(['dev', 'prod', 'test']),
@@ -21,11 +14,13 @@ const envSchema = z.object({
     DB_NAME: z.string(),
 });
 
-const parsed = envSchema.safeParse(process.env);
+export type EnvVars = z.infer<typeof envSchema>;
+
+const parsed = envSchema.safeParse({ ...process.env, NODE_ENV: nodeEnv });
 
 if (!parsed.success) {
     console.error('[ENV] Invalid environment variables:', parsed.error.format());
     process.exit(1);
 }
 
-export const env = parsed.data;
+export const env: EnvVars = parsed.data;
