@@ -4,6 +4,22 @@ Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi.
 
 ---
 
+## 2026-08-29 — Tooling muammolarini ketma-ket tuzatish
+
+`CLAUDE.md` dagi "ma'lum tooling muammolari" ro'yxati hajmi bo'yicha tartiblanib, kichigidan boshlab bajarildi. Har bir bosqich alohida commit.
+
+### 1-3. `package.json` metama'lumotlari va script'lari
+
+| # | Muammo | O'zgarish |
+|---|---|---|
+| 1 | `main` → `dist/server.js`, lekin swc `dist/src/` ga chiqaradi | `main` → `dist/src/server.js` |
+| 2 | `build` da `-d dist/test` va `--out-dir dist` bir vaqtda — `-d` o'lik argument edi | `swc ./src --source-maps --copy-files --out-dir dist` |
+| 3 | `rimraf` `dependencies` da turardi, faqat `clean` script'i uchun kerak | `devDependencies` ga ko'chirildi |
+
+**Tekshirildi:** `npm run clean` → `npm run build` → 28 fayl kompilyatsiya bo'ldi; `main` ko'rsatgan `dist/src/server.js` haqiqatan mavjud; `dist/test` papkasi endi umuman yaratilmaydi. `main` va `start` endi bir xil yo'lni ko'rsatadi.
+
+---
+
 ## 2026-08-29 — `tester` agenti uchun test infratuzilmasi
 
 **Maqsad:** avvalgi sessiyada uchta agent (`lead`, `back`, `tester`) yaratilgan edi, lekin `tester` da ishlash uchun **hech qanday sharoit yo'q edi** — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi test runner'da ishlamasdi. Uchala to'siq ham hal qilindi va agentlarning uchalasi ham haqiqiy topshiriq bilan sinovdan o'tkazildi.
