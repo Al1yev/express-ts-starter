@@ -1,0 +1,15 @@
+{
+    // `tsconfig.json` faqat `src/` ni qamraydi (`rootDir: "src"` — build uchun).
+    // Test fayllari `test/` da yotadi, shuning uchun ular uchun alohida, emit qilmaydigan
+    // konfiguratsiya kerak. Alias'larni (`@config`, ...) Vite runtime'da o'zi hal
+    // qiladi (`resolve.tsconfigPaths`), bu fayl esa `tsc` uchun.
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "rootDir": ".",
+        "noEmit": true,
+        "declaration": false,
+        "types": ["node", "vitest/globals"]
+    },
+    "include": ["src/**/*.ts", "test/**/*.ts"],
+    "exclude": ["node_modules", "dist"]
+}
