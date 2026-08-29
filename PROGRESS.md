@@ -91,6 +91,29 @@ Ikkita nozik joy:
 
 ---
 
+### 8. `ErrorMiddleware`: `HttpException` xabari endi maskalanmaydi
+
+**Muammo:** maskalash sharti `status >= 500` edi, ya'ni **ataylab** tashlangan `HttpException(503, 'To'lov provayderi javob bermadi')` xabari ham prod'da `'Internal server error'` ga aylanardi. `CLAUDE.md` esa "`HttpException` — operatsion xato, `status` va `message` client'ga boradi" deb yozilgan edi — kod hujjatga zid edi.
+
+**O'zgarish:** shart `status >= 500` → `!isHttpException`.
+
+```ts
+const clientMessage =
+    !isHttpException && env.NODE_ENV === 'prod' ? 'Internal server error' : message;
+```
+
+**Nima o'zgarmadi:** kutilmagan xatolar prod'da hamon maskalanadi. Ular ichki tafsilot (DB ulanish satri, fayl yo'llari) sizdirishi mumkin, `HttpException` esa dasturchi client uchun ataylab yozgan matn. `status >= 500` tekshiruvi olib tashlandi, chunki u ortiqcha edi — `!isHttpException` bo'lsa status har doim `500`.
+
+**Testlar:** eski xulqni tasdiqlagan test yangi xulqqa moslashtirildi va ikkalasini bir so'rovda taqqoslaydigan yangi test qo'shildi (operatsion 5xx xabari o'tadi, kutilmagan 5xx maskalanadi va `super-secret-parol` javobda yo'q). **Mutatsiya bilan tekshirildi:** eski shart qaytarilganda ikkala test ham yiqildi.
+
+**Yon ta'siri:** `/health` ning `503 Database unavailable` xabari endi prod'da ham client'ga yetib boradi (6-bosqichdagi eslatma o'z kuchini yo'qotdi).
+
+**Diqqat:** endi `HttpException` xabari prod'da to'g'ridan-to'g'ri client'ga boradi — unga maxfiy ma'lumot qo'ymaslik kerak. Bu `CLAUDE.md` ga yozildi.
+
+**Tekshirildi:** `npm run type-check` exit 0, `npm test` **58/58**.
+
+---
+
 ## 2026-08-29 — `tester` agenti uchun test infratuzilmasi
 
 **Maqsad:** avvalgi sessiyada uchta agent (`lead`, `back`, `tester`) yaratilgan edi, lekin `tester` da ishlash uchun **hech qanday sharoit yo'q edi** — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi test runner'da ishlamasdi. Uchala to'siq ham hal qilindi va agentlarning uchalasi ham haqiqiy topshiriq bilan sinovdan o'tkazildi.
@@ -164,7 +187,7 @@ Jonli server bilan `GET /health` **asosiy sessiya tomonidan alohida sinalmadi** 
 
 ~~**`/health` readiness probe bo'lsinmi?**~~ — **HAL QILINDI**, yuqoridagi "Tooling muammolarini ketma-ket tuzatish" yozuvining 6-bosqichiga qarang.
 
-**`ErrorMiddleware` da 5xx `HttpException` maskalanadi — shundaymi kerak?** Hozirgi shart faqat status'ga qaraydi:
+~~**`ErrorMiddleware` da 5xx `HttpException` maskalanadi — shundaymi kerak?**~~ — **HAL QILINDI**, yuqoridagi 8-bosqichga qarang. Quyida muammoning dastlabki tavsifi saqlanadi. Hozirgi shart faqat status'ga qaraydi:
 
 ```ts
 const clientMessage = status >= 500 && env.NODE_ENV === 'prod' ? 'Internal server error' : message;

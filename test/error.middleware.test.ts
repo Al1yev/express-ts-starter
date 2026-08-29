@@ -255,15 +255,26 @@ describe('ErrorMiddleware', () => {
             });
         });
 
-        it('5xx HttpException xabari ham maskalanadi (status saqlanadi)', async () => {
-            // Diqqat: maskalash sharti `status >= 500`, ya'ni ATAYLAB tashlangan
-            // `HttpException(503, ...)` xabari ham prod'da yo'qoladi. Status esa
-            // o'zgarmaydi. CLAUDE.md "HttpException xabari client'ga boradi" deydi —
-            // bu qoidadan istisno. Kod xulqi shu; hisobotda alohida qayd etilgan.
+        it('5xx HttpException xabari maskalanmaydi — u ataylab tashlangan', async () => {
+            // Maskalash sharti `status >= 500` emas, `!isHttpException`. `HttpException`
+            // operatsion xato: xabari client uchun yozilgan, shuning uchun 5xx da ham
+            // o'zgarmasdan boradi. Faqat KUTILMAGAN xatolar maskalanadi.
             const res = await request(app).get('/err/service-unavailable');
 
             expect(res.status).toBe(503);
-            expect(res.body.message).toBe('Internal server error');
+            expect(res.body.message).toBe('To‘lov provayderi javob bermadi');
+        });
+
+        it('maskalash faqat kutilmagan xatoga tegishli, HttpException’ga emas', async () => {
+            // Ikkalasi ham 5xx, lekin natija har xil bo'lishi shart.
+            const operational = await request(app).get('/err/service-unavailable');
+            const unexpected = await request(app).get('/err/unexpected');
+
+            expect(operational.status).toBe(503);
+            expect(unexpected.status).toBe(500);
+            expect(operational.body.message).not.toBe('Internal server error');
+            expect(unexpected.body.message).toBe('Internal server error');
+            expect(unexpected.body.message).not.toContain('super-secret-parol');
         });
     });
 

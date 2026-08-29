@@ -46,8 +46,8 @@ Alias'lar **uch joyda** e'lon qilingan va sinxron turishi shart: `tsconfig.json`
 
 **Xatolar** (`src/middlewares/error.middleware.ts`):
 
-- `HttpException` — operatsion xato, `status` va `message` client'ga boradi
-- Boshqa har qanday xato — `500`; **prod'da** client `'Internal server error'` oladi, dev/test'da haqiqiy xabar
+- `HttpException` — operatsion xato: `status` va `message` client'ga o'zgarmasdan boradi, **prod'da ham**, 5xx bo'lsa ham. Xabari client uchun yozilgan deb hisoblanadi — shuning uchun unga maxfiy ma'lumot qo'ymang
+- Boshqa har qanday xato — `500`; **prod'da** client `'Internal server error'` oladi, dev/test'da haqiqiy xabar. Maskalash sharti `!isHttpException`, `status >= 500` emas
 - `stack` faqat serverda logga yoziladi
 
 **Validatsiya** — `ValidationMiddleware(Dto, skipMissingProperties?, whitelist?, forbidNonWhitelisted?)`.
@@ -63,7 +63,7 @@ Readiness probe. DB ulanishi bo'lmasa (`mongoose` `readyState !== 1`) `503 Datab
 
 Muvaffaqiyatli javob: `{ status: 'ok', db: 'up', uptime, env }`.
 
-⚠️ **Prod'da xabar yo'qoladi.** `ErrorMiddleware` prod'da har qanday 5xx ni `'Internal server error'` ga aylantiradi, shu jumladan bu `HttpException(503, ...)` ni ham. **Status kodi saqlanadi**, ya'ni orkestrator uchun muammo yo'q, lekin log'ga qaragan odam sababni javobdan ko'rmaydi.
+`503` `HttpException` orqali tashlanadi, shuning uchun `'Database unavailable'` xabari prod'da ham client'ga yetib boradi.
 
 ## Script'lar
 

@@ -17,10 +17,16 @@ export const ErrorMiddleware = (
         console.error(error.stack);
     }
 
-    // Kutilmagan xatolar prod'da ichki tafsilotlarni oshkor qilmasligi kerak.
-    // Dev/test'da haqiqiy xabar qoladi, aks holda debug qilib bo'lmaydi.
+    // `HttpException` — ataylab tashlangan operatsion xato; uning xabari client uchun
+    // yozilgan, shuning uchun status'idan qat'i nazar (4xx ham, 5xx ham) o'zgarmasdan
+    // uzatiladi. Aks holda `HttpException(503, 'To'lov provayderi javob bermadi')` kabi
+    // foydali xabarlar prod'da yo'qolardi.
+    //
+    // Kutilmagan xatolar esa prod'da maskalanadi — ular ichki tafsilot (DB ulanish
+    // satri, fayl yo'llari, uchinchi tomon kutubxonasining ichki matni) sizdirishi
+    // mumkin. Dev/test'da haqiqiy xabar qoladi, aks holda debug qilib bo'lmaydi.
     const clientMessage =
-        status >= 500 && env.NODE_ENV === 'prod' ? 'Internal server error' : message;
+        !isHttpException && env.NODE_ENV === 'prod' ? 'Internal server error' : message;
 
     res.status(status).json({ success: false, message: clientMessage, data: null });
 };
