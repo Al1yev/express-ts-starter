@@ -12,7 +12,8 @@
         "start": "npm run build && cross-env NODE_ENV=prod node dist/src/server.js",
         "clean": "rimraf dist",
         "type-check": "tsc --noEmit && tsc -p tsconfig.test.json",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "prepare": "husky"
     },
     "keywords": [],
     "author": "",

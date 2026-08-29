@@ -1,0 +1,8 @@
+# Commit oldidan TEZ tekshiruvlar (~13s). Testlar pre-push da - ular
+# har commit uchun ortiqcha, va sekin hook `--no-verify` ga olib keladi.
+#
+# Formatlash tekshiruvi ataylab bu yerda: `.claude/hooks/format.mjs` faqat
+# Claude'ning Write/Edit chaqiruvlarini ushlaydi, qo'lda yoki shell orqali
+# yozilgan faylni emas.
+npx prettier --check .
+npm run type-check

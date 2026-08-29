@@ -1,0 +1,3 @@
+# Push oldidan to'liq test to'plami (~8s). Commit'da emas, chunki lokal
+# commit'lar tez-tez bo'ladi, push esa kamroq va tashqariga chiqadi.
+npm test

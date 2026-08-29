@@ -114,6 +114,28 @@ const clientMessage =
 
 ---
 
+### 9. husky ulandi
+
+`husky@9` o'rnatilgan edi, lekin `.husky/` papkasi ham, `prepare` script'i ham yo'q edi — ya'ni hech qanday git hook ishlamasdi.
+
+**Vaqt o'lchandi, keyin qaror qilindi:** `prettier --check .` 5.2s, `type-check` 8.1s, `npm test` 7.8s. Uchalasini `pre-commit` ga qo'yish ~21s bo'lardi — bunday hook `--no-verify` bilan aylanib o'tiladi.
+
+| Hook         | Nima                                        | Vaqt |
+| ------------ | ------------------------------------------- | ---- |
+| `pre-commit` | `prettier --check .` + `npm run type-check` | ~13s |
+| `pre-push`   | `npm test`                                  | ~8s  |
+
+Formatlash tekshiruvi ataylab `pre-commit` da: `.claude/hooks/format.mjs` faqat `Write`/`Edit` tool'larini ushlaydi, shell orqali yozilgan faylni emas — bu 4-bosqichda amalda ko'rilgan (7 ta formatlanmagan fayl aynan shundan chiqqan edi).
+
+**Ikkala bosqich ham haqiqiy sinovdan o'tdi.** `src/utils/__probe.ts` ga tip xatosi qo'yib commit qilishga urinildi:
+
+- prettier bosqichi bloklad: `husky - pre-commit script failed (code 1)` (`husky init` `package.json` formatini buzgan edi)
+- format tuzatilgach type-check bloklad: `TS2322: Type 'string' is not assignable to type 'number'` → `code 2`
+
+Ikkala holatda ham commit yaratilmadi. Probe fayli o'chirildi.
+
+---
+
 ## 2026-08-29 — `tester` agenti uchun test infratuzilmasi
 
 **Maqsad:** avvalgi sessiyada uchta agent (`lead`, `back`, `tester`) yaratilgan edi, lekin `tester` da ishlash uchun **hech qanday sharoit yo'q edi** — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi test runner'da ishlamasdi. Uchala to'siq ham hal qilindi va agentlarning uchalasi ham haqiqiy topshiriq bilan sinovdan o'tkazildi.

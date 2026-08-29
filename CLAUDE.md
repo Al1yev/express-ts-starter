@@ -65,6 +65,19 @@ Muvaffaqiyatli javob: `{ status: 'ok', db: 'up', uptime, env }`.
 
 `503` `HttpException` orqali tashlanadi, shuning uchun `'Database unavailable'` xabari prod'da ham client'ga yetib boradi.
 
+## Git hook'lari (husky)
+
+`prepare: "husky"` — `npm install` dan keyin o'zi ulanadi. Yangi klonda qo'shimcha qadam kerak emas.
+
+| Hook         | Nima ishlaydi                               | Vaqt |
+| ------------ | ------------------------------------------- | ---- |
+| `pre-commit` | `prettier --check .` + `npm run type-check` | ~13s |
+| `pre-push`   | `npm test`                                  | ~8s  |
+
+Testlar ataylab `pre-push` da: lokal commit'lar tez-tez bo'ladi, sekin `pre-commit` esa odamlarni `--no-verify` ga majburlaydi.
+
+Formatlash tekshiruvi `pre-commit` da, chunki `.claude/hooks/format.mjs` faqat Claude'ning `Write`/`Edit` chaqiruvlarini ushlaydi — qo'lda yoki shell orqali yozilgan faylni emas.
+
 ## Script'lar
 
 | Buyruq                  | Izoh                                                                            |
@@ -103,7 +116,6 @@ Integratsiya testida `app.listen()` chaqirmang: `createTestApp([new SomeRouter()
 ## Ma'lum tooling muammolari (hali tuzatilmagan)
 
 - **ESLint umuman ishlamaydi** — v9 o'rnatilgan, lekin config eski `.eslintrc.json` formatida. `eslint.config.js` (flat config) kerak. `lint` script'i ham yo'q.
-- `husky` o'rnatilgan, lekin `.husky/` va `prepare` script'i yo'q.
 
 ## Kod uslubi
 
