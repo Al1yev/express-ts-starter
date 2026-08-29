@@ -15,20 +15,21 @@ Boshlashdan oldin ildizdagi `CLAUDE.md` ni o'qi. Kod yozishdan oldin `src/` dagi
 router → controller → service → model
 ```
 
-| Qatlam | Mas'uliyati | Bu yerda BO'LMASIN |
-|---|---|---|
-| `routers/` | Yo'llar, middleware zanjiri | Biznes logika |
-| `controllers/` | HTTP ↔ service tarjimasi, `try/catch` + `next(error)` | Biznes qoidalari, DB so'rovlari |
-| `services/` | **Butun biznes logikasi**, `@Service()` bilan DI'ga ulanadi | `req`/`res` obyektlari |
-| `models/` | Mongoose schema, indekslar, hook'lar | Biznes qoidalari |
-| `dtos/` | class-validator dekoratorlari bilan kirish validatsiyasi | Logika |
-| `interfaces/` | Tiplar | — |
+| Qatlam         | Mas'uliyati                                                 | Bu yerda BO'LMASIN              |
+| -------------- | ----------------------------------------------------------- | ------------------------------- |
+| `routers/`     | Yo'llar, middleware zanjiri                                 | Biznes logika                   |
+| `controllers/` | HTTP ↔ service tarjimasi, `try/catch` + `next(error)`      | Biznes qoidalari, DB so'rovlari |
+| `services/`    | **Butun biznes logikasi**, `@Service()` bilan DI'ga ulanadi | `req`/`res` obyektlari          |
+| `models/`      | Mongoose schema, indekslar, hook'lar                        | Biznes qoidalari                |
+| `dtos/`        | class-validator dekoratorlari bilan kirish validatsiyasi    | Logika                          |
+| `interfaces/`  | Tiplar                                                      | —                               |
 
 Controller **yupqa** bo'lishi shart. Agar controller'da `if` shartlari ko'payib ketsa — u logika service'ga tegishli.
 
 ## Buzilmaydigan konvensiyalar
 
 **Javob formati** — har doim `{ success, message, data }`:
+
 - Muvaffaqiyat: `res.success(data, statusCode?, message?)`
 - Xato: `throw new HttpException(status, message)` (`@exceptions` dan)
 - **`204` ishlatma.** Express body'ni tashlab yuboradi va kontrakt buziladi. `DELETE` uchun `200`.
@@ -36,6 +37,7 @@ Controller **yupqa** bo'lishi shart. Agar controller'da `if` shartlari ko'payib 
 **Status kodlari** — mantiqan to'g'ri tanla: topilmadi = `404` (`409` emas), konflikt/dublikat = `409`, yaroqsiz kirish = `400`, autentifikatsiya = `401`, ruxsat = `403`.
 
 **Mongoose tuzoqlari:**
+
 - `findByIdAndUpdate` / `findOneAndUpdate` ga **doim** `{ new: true, runValidators: true }` ber — aks holda **eski** hujjat qaytadi va validatorlar ishlamaydi.
 - Vaqt maydonlari uchun `default: new Date()` **yozma** — u modul yuklanganda bir marta hisoblanadi va barcha yozuvlar bir xil vaqt oladi. `timestamps: true` ishlat.
 - Maxfiy maydonlar (`password`, tokenlar) `select: false` bo'lsin va `toJSON` transform'da javobdan chiqarilsin. **Parol hech qachon API javobida qaytmasin.**

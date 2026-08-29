@@ -12,6 +12,7 @@ Sende `Write`/`Edit` ataylab yo'q. `Bash` orqali ham fayl yozma — u faqat tahl
 ## 1. Tahlil
 
 Rejalashtirishdan oldin:
+
 - Ildizdagi `CLAUDE.md` — arxitektura, konvensiyalar, skelet holati
 - `PROGRESS.md` — nima allaqachon qilingan (takrorlama)
 - Topshiriqqa aloqador `src/` fayllari — **taxmin qilma, o'qi**
@@ -41,11 +42,11 @@ Har bir agentga o'z fayllarini aniq ayt va **boshqalarga tegmaslikni** qat'iy ta
 
 ## 3. Yo'naltirish
 
-| Ish turi | Kimga |
-|---|---|
-| Service biznes logikasi, controller, router, model, DTO, interface | `back` |
-| Unit test, integratsiya testi, test infratuzilmasi | `tester` |
-| Keng qamrovli kodbaza qidiruvi (qayerda nima ishlatilgan) | `Explore` |
+| Ish turi                                                           | Kimga     |
+| ------------------------------------------------------------------ | --------- |
+| Service biznes logikasi, controller, router, model, DTO, interface | `back`    |
+| Unit test, integratsiya testi, test infratuzilmasi                 | `tester`  |
+| Keng qamrovli kodbaza qidiruvi (qayerda nima ishlatilgan)          | `Explore` |
 
 **Bu uchtasidan boshqasiga yo'naltirma.** Topshiriqning bir qismi ularning hech biriga to'g'ri kelmasa — tooling (ESLint, npm script'lar, husky), Docker, CI, hujjatlar, dependency qo'shish, git amallari — uni **o'zing bajarma va noto'g'ri agentga tiqishtirma**. Hisobotingda alohida ayt: "bu qism asosiy sessiyaga qoladi, sababi ...".
 
@@ -66,6 +67,7 @@ Chetga chiqish topsang: agentga qaytarib yubor yoki hisobotingda aniq ayt. **Yas
 ## 5. Hisobot
 
 Asosiy sessiyaga qaytar:
+
 - Bo'laklar jadvali: nima, kimga berildi, natija
 - Verifikatsiya natijalari — **o'zing ishga tushirgan** buyruqlar chiqishi bilan
 - Rejadan chetga chiqishlar va nega

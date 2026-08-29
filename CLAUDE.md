@@ -39,11 +39,13 @@ Alias'lar **uch joyda** e'lon qilingan va sinxron turishi shart: `tsconfig.json`
 ## Konvensiyalar
 
 **Javob formati** — har doim `{ success, message, data }`:
+
 - Muvaffaqiyat: `res.success(data, statusCode?, message?)` (`ResponseMiddleware` `res` ga qo'shadi, default `200`/`'OK'`)
 - Xato: `throw new HttpException(status, message)` — `ErrorMiddleware` ushlaydi
 - `204` ishlatmang — Express body'ni tashlab yuboradi va javob formati buziladi
 
 **Xatolar** (`src/middlewares/error.middleware.ts`):
+
 - `HttpException` — operatsion xato, `status` va `message` client'ga boradi
 - Boshqa har qanday xato — `500`; **prod'da** client `'Internal server error'` oladi, dev/test'da haqiqiy xabar
 - `stack` faqat serverda logga yoziladi
@@ -57,16 +59,16 @@ Default: `skipMissingProperties=false`, `whitelist=true`, `forbidNonWhitelisted=
 
 ## Script'lar
 
-| Buyruq | Izoh |
-|---|---|
-| `npm run dev` | `cross-env` + `tsx watch` — Windows'da ham ishlaydi. Mongo ishlab turishi kerak |
-| `npm test` | Vitest, bir marta. Ishlaydi |
-| `npm run test:watch` | Vitest watch rejimida |
-| `npm run test:coverage` | v8 coverage → `coverage/` |
-| `npm run type-check` | `tsc --noEmit` (src) **va** `tsc -p tsconfig.test.json` (src + test) — ishlaydi |
-| `npm run build` | swc → `dist/src/` |
-| `npm run clean` | `rimraf dist` — Windows'da ham ishlaydi |
-| `npm run format` | prettier |
+| Buyruq                  | Izoh                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `npm run dev`           | `cross-env` + `tsx watch` — Windows'da ham ishlaydi. Mongo ishlab turishi kerak |
+| `npm test`              | Vitest, bir marta. Ishlaydi                                                     |
+| `npm run test:watch`    | Vitest watch rejimida                                                           |
+| `npm run test:coverage` | v8 coverage → `coverage/`                                                       |
+| `npm run type-check`    | `tsc --noEmit` (src) **va** `tsc -p tsconfig.test.json` (src + test) — ishlaydi |
+| `npm run build`         | swc → `dist/src/`                                                               |
+| `npm run clean`         | `rimraf dist` — Windows'da ham ishlaydi                                         |
+| `npm run format`        | prettier                                                                        |
 
 ## Testlar
 

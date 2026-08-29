@@ -14,11 +14,7 @@
             "Bash(docker start mongo)",
             "Bash(docker stop mongo)"
         ],
-        "deny": [
-            "Read(./.env.prod)",
-            "Bash(git push --force*)",
-            "Bash(git push -f *)"
-        ]
+        "deny": ["Read(./.env.prod)", "Bash(git push --force*)", "Bash(git push -f *)"]
     },
     "hooks": {
         "PostToolUse": [

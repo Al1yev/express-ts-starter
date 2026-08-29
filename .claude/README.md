@@ -23,12 +23,14 @@ Bu loyihaning Claude Code sozlamalari. Loyiha kontekstining o'zi ildizdagi [`CLA
 **Permissions.** `allow` ro'yxatida bu loyihada tez-tez takrorlanadigan xavfsiz buyruqlar: `npm run *`, `npx tsc/swc/prettier`, git'ning o'qish buyruqlari, Mongo konteynerini boshqarish. Ular uchun ruxsat so'ralmaydi.
 
 `deny` ro'yxatida:
+
 - `Read(./.env.prod)` — prod maxfiy ma'lumotlari. **Diqqat:** bu Read tool'ini to'sadi, lekin `cat .env.prod` kabi shell orqali o'qishni emas — bu qalqon emas, ehtiyot chorasi.
 - `git push --force` / `-f` — tarixni qayta yozishni tasodifan bajarmaslik uchun.
 
 **Hook.** `PostToolUse` `Write|Edit` da `format.mjs` ishga tushadi va yozilgan faylni loyihaning `.prettierrc.json` sozlamalari bilan formatlaydi (4 space, single quotes, printWidth 100). Shu tufayli formatlash uchun alohida qadam kerak emas.
 
 `format.mjs` xususiyatlari:
+
 - **Hech qachon bloklamaydi** — buzuq JSON, yo'q fayl, o'rnatilmagan prettier: har holatda `exit 0`.
 - **Faqat loyiha ichi** — tashqaridagi fayllarga tegmaydi.
 - **npx emas** — lokal `node_modules/prettier/bin/prettier.cjs` to'g'ridan-to'g'ri chaqiriladi, har tahrirda ~1 soniya tejaladi.
@@ -37,9 +39,9 @@ Bu loyihaning Claude Code sozlamalari. Loyiha kontekstining o'zi ildizdagi [`CLA
 
 ## Slash-buyruqlar
 
-| Buyruq | Vazifasi |
-|---|---|
-| `/verify` | Type-check → build → DB bootstrap tartibi → fail-fast → HTTP kontrakti (404/400/500, dev va prod). Skelet holatining kutilgan "g'alatiliklari" ham hujjatlangan. |
+| Buyruq                   | Vazifasi                                                                                                                                                                                            |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/verify`                | Type-check → build → DB bootstrap tartibi → fail-fast → HTTP kontrakti (404/400/500, dev va prod). Skelet holatining kutilgan "g'alatiliklari" ham hujjatlangan.                                    |
 | `/scaffold <EntityName>` | Yangi entity uchun 6 qatlam + barrel eksportlari + `server.ts` da ro'yxatdan o'tkazish. Konvensiyalar (204 ishlatmaslik, `{new: true}`, alias'larni uch joyda e'lon qilish) buyruq ichida yozilgan. |
 
 ## settings.local.json
@@ -48,17 +50,17 @@ Shaxsiy sozlamalar uchun (gitignore qilingan). Masalan `defaultMode`, o'zingizga
 
 ## Agentlar
 
-| Agent | Vazifasi | Tools |
-|---|---|---|
-| `lead` | Topshiriqni tahlil qiladi, bo'laklarga ajratadi, `back`/`tester` ga yo'naltiradi, natijani mustaqil tekshiradi. | `Read, Glob, Grep, Bash, Agent` |
-| `back` | Qatlamli struktura asosida backend logikasi: service, controller, router, model, DTO. | `Read, Write, Edit, Bash, Glob, Grep` |
-| `tester` | Service unit testlari, middleware testlari, supertest orqali route integratsiya testlari. | `Read, Write, Edit, Bash, Glob, Grep` |
+| Agent    | Vazifasi                                                                                                        | Tools                                 |
+| -------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `lead`   | Topshiriqni tahlil qiladi, bo'laklarga ajratadi, `back`/`tester` ga yo'naltiradi, natijani mustaqil tekshiradi. | `Read, Glob, Grep, Bash, Agent`       |
+| `back`   | Qatlamli struktura asosida backend logikasi: service, controller, router, model, DTO.                           | `Read, Write, Edit, Bash, Glob, Grep` |
+| `tester` | Service unit testlari, middleware testlari, supertest orqali route integratsiya testlari.                       | `Read, Write, Edit, Bash, Glob, Grep` |
 
-| Agent | Model | Nega |
-|---|---|---|
-| `lead` | `inherit` | Yo'naltirish va verifikatsiya asosiy sessiya bilan bir xil darajada bo'lsin. |
-| `back` | `sonnet` | Aniq belgilangan qatlamli strukturaga kod yozish — tez va arzon. |
-| `tester` | `opus` | Test yozish qiyinroq: xato yo'llarini o'ylab topish, `vi.mock` kabi tuzoqlarni ko'rish, yolg'on yashil testni sezish. |
+| Agent    | Model     | Nega                                                                                                                  |
+| -------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
+| `lead`   | `inherit` | Yo'naltirish va verifikatsiya asosiy sessiya bilan bir xil darajada bo'lsin.                                          |
+| `back`   | `sonnet`  | Aniq belgilangan qatlamli strukturaga kod yozish — tez va arzon.                                                      |
+| `tester` | `opus`    | Test yozish qiyinroq: xato yo'llarini o'ylab topish, `vi.mock` kabi tuzoqlarni ko'rish, yolg'on yashil testni sezish. |
 
 ### Ish oqimi
 
@@ -89,14 +91,14 @@ Bu qoidalar shu loyihada amalda o'rganilgan:
 
 Avval `tester` uchun hech qanday sharoit yo'q edi — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi ishlamasdi. Endi hammasi tayyor va `npm test` ishlaydi; agent faqat test yozadi, muhitni qurmaydi.
 
-| Fayl | Vazifasi |
-|---|---|
-| `vitest.config.mts` | swc transform (dekorator metadatasi), alias'lar, setup fayllari, coverage |
-| `test/global-setup.ts` | butun run uchun **bitta** `mongodb-memory-server` |
-| `test/setup.ts` | har worker'da `@config` import'idan **oldin** `NODE_ENV`/`DB_*` ni qo'yadi |
-| `test/helpers/` | `createTestApp`, `connectTestDb`, `clearTestDb`, `disconnectTestDb` |
-| `test/infrastructure.test.ts` | muhitning o'zini tekshiradi (domenga bog'liq emas) |
-| `.env.test`, `tsconfig.test.json` | commit qilinadi; `.gitignore` da `!/.env.test` istisnosi |
+| Fayl                              | Vazifasi                                                                   |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| `vitest.config.mts`               | swc transform (dekorator metadatasi), alias'lar, setup fayllari, coverage  |
+| `test/global-setup.ts`            | butun run uchun **bitta** `mongodb-memory-server`                          |
+| `test/setup.ts`                   | har worker'da `@config` import'idan **oldin** `NODE_ENV`/`DB_*` ni qo'yadi |
+| `test/helpers/`                   | `createTestApp`, `connectTestDb`, `clearTestDb`, `disconnectTestDb`        |
+| `test/infrastructure.test.ts`     | muhitning o'zini tekshiradi (domenga bog'liq emas)                         |
+| `.env.test`, `tsconfig.test.json` | commit qilinadi; `.gitignore` da `!/.env.test` istisnosi                   |
 
 Hal qilingan uchta to'siq:
 

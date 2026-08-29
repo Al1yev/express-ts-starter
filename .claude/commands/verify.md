@@ -9,6 +9,7 @@ Quyidagi verifikatsiya bosqichlarini ketma-ket bajar. Har birining natijasini o'
 ```
 npm run type-check
 ```
+
 Exit 0 va chiqishsiz bo'lishi kerak. `strictNullChecks` yoqilganini tasdiqlash uchun: `npx tsc --showConfig | grep strictNullChecks`.
 
 ## 2. Build
@@ -16,6 +17,7 @@ Exit 0 va chiqishsiz bo'lishi kerak. `strictNullChecks` yoqilganini tasdiqlash u
 ```
 npx swc ./src -d dist --copy-files
 ```
+
 Barcha fayllar kompilyatsiya bo'lishi va path alias'lar (`@config`, `@models`, ...) nisbiy `require()` ga aylanishi kerak. Tekshirish: `grep 'require("' dist/src/app.js`.
 
 ## 3. DB ulanish tartibi
@@ -25,6 +27,7 @@ MongoDB kerak. Ishlamayotgan bo'lsa: `docker start mongo`, yoki yo'q bo'lsa `doc
 ```
 npm run dev
 ```
+
 `Successfully connected to Database!` **`🚀 App listening`** dan **oldin** chiqishi shart — bu DB ulanishi `await` qilinayotganini isbotlaydi. Tekshirgach jarayonni to'xtat (Windows'da `tsx` bola-jarayon qoldirishi mumkin — `netstat -ano | grep ":5000"` bilan tasdiqlab, kerak bo'lsa `taskkill //F //PID <pid>`).
 
 ## 4. DB o'chiq holatda fail-fast
@@ -35,11 +38,11 @@ Mongo'ni to'xtat (`docker stop mongo`) va serverni qayta ishga tushir. Server `l
 
 Server ko'tarilgan holda:
 
-| So'rov | Kutilgan |
-|---|---|
-| `GET /yoq-route` | `404` + `{"success":false,"message":"Route /yoq-route not found","data":null}` |
-| `POST /users` (ixtiyoriy body) | `400` — pastdagi eslatmaga qara |
-| `GET /users` | `500` — dev'da haqiqiy xabar, prod'da `Internal server error` |
+| So'rov                         | Kutilgan                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------ |
+| `GET /yoq-route`               | `404` + `{"success":false,"message":"Route /yoq-route not found","data":null}` |
+| `POST /users` (ixtiyoriy body) | `400` — pastdagi eslatmaga qara                                                |
+| `GET /users`                   | `500` — dev'da haqiqiy xabar, prod'da `Internal server error`                  |
 
 Prod xulqini ham tekshir: `npx cross-env NODE_ENV=prod npx tsx src/server.ts` bilan qayta ishga tushirib, `GET /users` javobida ichki xato matni **oshkor bo'lmasligini** tasdiqla. Bu error middleware'ning asosiy vazifasi.
 

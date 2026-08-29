@@ -1,0 +1,7 @@
+# Loyihada satr oxiri har doim LF.
+#
+# Sababi: `.prettierrc.json` da `endOfLine: "lf"`, lekin Windows'da
+# `core.autocrlf=true` checkout paytida fayllarni CRLF ga aylantirardi.
+# Natijada `npx prettier --check .` doim qizil edi (38 fayl), farq esa
+# faqat satr oxirida bo'lardi. `.gitattributes` `core.autocrlf` dan ustun.
+* text=auto eol=lf
