@@ -54,7 +54,11 @@ Shaxsiy sozlamalar uchun (gitignore qilingan). Masalan `defaultMode`, o'zingizga
 | `back` | Qatlamli struktura asosida backend logikasi: service, controller, router, model, DTO. | `Read, Write, Edit, Bash, Glob, Grep` |
 | `tester` | Service unit testlari, middleware testlari, supertest orqali route integratsiya testlari. | `Read, Write, Edit, Bash, Glob, Grep` |
 
-Uchalasi ham `model: inherit` — asosiy sessiya modelidan meros oladi.
+| Agent | Model | Nega |
+|---|---|---|
+| `lead` | `inherit` | Yo'naltirish va verifikatsiya asosiy sessiya bilan bir xil darajada bo'lsin. |
+| `back` | `sonnet` | Aniq belgilangan qatlamli strukturaga kod yozish — tez va arzon. |
+| `tester` | `opus` | Test yozish qiyinroq: xato yo'llarini o'ylab topish, `vi.mock` kabi tuzoqlarni ko'rish, yolg'on yashil testni sezish. |
 
 ### Ish oqimi
 

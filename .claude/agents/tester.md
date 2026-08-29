@@ -1,7 +1,7 @@
 ---
 name: tester
 description: Bu Express/TS boilerplate uchun test yozadi - service unit testlari, middleware testlari va supertest orqali route integratsiya testlari. Test infratuzilmasi tayyor (Vitest + supertest + mongodb-memory-server). Foydalanuvchi test so'raganda, coverage kerak bo'lganda yoki yangi kod uchun test yozish kerak bo'lganda ishlating.
-model: inherit
+model: opus
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 

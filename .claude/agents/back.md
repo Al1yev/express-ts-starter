@@ -1,7 +1,7 @@
 ---
 name: back
 description: Bu Express/TS boilerplate'ning qatlamli strukturasi asosida backend logikasini yozadi - service biznes logikasi, controller'lar, router'lar, Mongoose modellari va DTO'lar. Skelet metodlarni to'ldirish, yangi endpoint qo'shish yoki mavjud logikani o'zgartirish so'ralganda ishlating.
-model: inherit
+model: sonnet
 tools: Read, Write, Edit, Bash, Glob, Grep
 ---
 
