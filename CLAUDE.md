@@ -95,7 +95,7 @@ Integratsiya testida `app.listen()` chaqirmang: `createTestApp([new SomeRouter()
 ## Ma'lum tooling muammolari (hali tuzatilmagan)
 
 - **ESLint umuman ishlamaydi** — v9 o'rnatilgan, lekin config eski `.eslintrc.json` formatida. `eslint.config.js` (flat config) kerak. `lint` script'i ham yo'q.
-- Ortiqcha dep'lar: `nodemon`, `ts-node`, `ts-node-dev` (`tsx` yetarli).
+- `build` (swc) `dist/src/` ga chiqaradi, `build:tsc` esa `dist/` ildiziga. `main`/`start` `dist/src/server.js` ni ko'rsatgani uchun `build:tsc` chiqishi ular uchun topilmaydi.
 - `husky` o'rnatilgan, lekin `.husky/` va `prepare` script'i yo'q.
 
 ## Kod uslubi

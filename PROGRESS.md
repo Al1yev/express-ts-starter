@@ -37,6 +37,18 @@ Ikkita nozik joy:
 
 ---
 
+### 5. Ortiqcha dependency'lar olib tashlandi
+
+`nodemon`, `ts-node`, `ts-node-dev` — uchalasi ham hech qayerda ishlatilmasdi (`tsx` yetarli). Tekshirildi: `nodemon.json` yo'q, kod va config'larda birorta havola yo'q, `npm ls` ga ko'ra ularga faqat bir-biri bog'liq edi (`ts-node-dev` → `ts-node`).
+
+`node_modules`: **404 → 372** paket.
+
+**Tekshirildi:** `npm run type-check` exit 0, `npm test` 55/55, `npm run build` 28 fayl, `npm run build:tsc` exit 0.
+
+**Yo'l-yo'lakay topilgan yangi nomuvofiqlik.** `build` (swc) `dist/src/` ga chiqaradi, `build:tsc` esa (`tsc` + `tsc-alias`) `dist/` ildiziga — ya'ni `dist/server.js`. `main` va `start` `dist/src/server.js` ni ko'rsatadi, demak `build:tsc` chiqishi ular uchun **topilmaydi**. Bu yangi ro'yxatga qo'shildi, tuzatilmadi.
+
+---
+
 ## 2026-08-29 — `tester` agenti uchun test infratuzilmasi
 
 **Maqsad:** avvalgi sessiyada uchta agent (`lead`, `back`, `tester`) yaratilgan edi, lekin `tester` da ishlash uchun **hech qanday sharoit yo'q edi** — framework o'rnatilmagan, `.env.test` yo'q, dekorator metadatasi test runner'da ishlamasdi. Uchala to'siq ham hal qilindi va agentlarning uchalasi ham haqiqiy topshiriq bilan sinovdan o'tkazildi.
