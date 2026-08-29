@@ -23,7 +23,7 @@ Barcha fayllar kompilyatsiya bo'lishi va path alias'lar (`@config`, `@models`, .
 MongoDB kerak. Ishlamayotgan bo'lsa: `docker start mongo`, yoki yo'q bo'lsa `docker run -d --name mongo -p 27017:27017 mongo:latest`.
 
 ```
-NODE_ENV=dev npx tsx src/server.ts
+npm run dev
 ```
 `Successfully connected to Database!` **`🚀 App listening`** dan **oldin** chiqishi shart — bu DB ulanishi `await` qilinayotganini isbotlaydi. Tekshirgach jarayonni to'xtat (Windows'da `tsx` bola-jarayon qoldirishi mumkin — `netstat -ano | grep ":5000"` bilan tasdiqlab, kerak bo'lsa `taskkill //F //PID <pid>`).
 
@@ -41,7 +41,7 @@ Server ko'tarilgan holda:
 | `POST /users` (ixtiyoriy body) | `400` — pastdagi eslatmaga qara |
 | `GET /users` | `500` — dev'da haqiqiy xabar, prod'da `Internal server error` |
 
-Prod xulqini ham tekshir: `NODE_ENV=prod` bilan qayta ishga tushirib, `GET /users` javobida ichki xato matni **oshkor bo'lmasligini** tasdiqla. Bu error middleware'ning asosiy vazifasi.
+Prod xulqini ham tekshir: `npx cross-env NODE_ENV=prod npx tsx src/server.ts` bilan qayta ishga tushirib, `GET /users` javobida ichki xato matni **oshkor bo'lmasligini** tasdiqla. Bu error middleware'ning asosiy vazifasi.
 
 ## Kutilgan "g'alatiliklar" — bular bug emas
 

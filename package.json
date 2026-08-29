@@ -3,14 +3,14 @@
     "version": "1.0.0",
     "main": "dist/server.js",
     "scripts": {
-        "dev": "NODE_ENV=dev tsx watch src/server.ts",
+        "dev": "cross-env NODE_ENV=dev tsx watch src/server.ts",
         "build": "swc ./src -d dist/test --source-maps --copy-files --out-dir dist",
         "build:tsc": "tsc && tsc-alias",
         "test": "vitest run",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
         "start": "npm run build && cross-env NODE_ENV=prod node dist/src/server.js",
-        "clean": "rm -rf dist",
+        "clean": "rimraf dist",
         "type-check": "tsc --noEmit && tsc -p tsconfig.test.json",
         "format": "prettier --write ."
     },

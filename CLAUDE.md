@@ -59,12 +59,13 @@ Default: `skipMissingProperties=false`, `whitelist=true`, `forbidNonWhitelisted=
 
 | Buyruq | Izoh |
 |---|---|
-| `npm run dev` | ⚠️ **Windows'da ishlamaydi** — `NODE_ENV=dev` bash sintaksisi. Vaqtinchalik: `npx cross-env NODE_ENV=dev npx tsx watch src/server.ts` |
+| `npm run dev` | `cross-env` + `tsx watch` — Windows'da ham ishlaydi. Mongo ishlab turishi kerak |
 | `npm test` | Vitest, bir marta. Ishlaydi |
 | `npm run test:watch` | Vitest watch rejimida |
 | `npm run test:coverage` | v8 coverage → `coverage/` |
 | `npm run type-check` | `tsc --noEmit` (src) **va** `tsc -p tsconfig.test.json` (src + test) — ishlaydi |
 | `npm run build` | swc → `dist/src/` |
+| `npm run clean` | `rimraf dist` — Windows'da ham ishlaydi |
 | `npm run format` | prettier |
 
 ## Testlar
@@ -92,7 +93,6 @@ Integratsiya testida `app.listen()` chaqirmang: `createTestApp([new SomeRouter()
 ## Ma'lum tooling muammolari (hali tuzatilmagan)
 
 - **ESLint umuman ishlamaydi** — v9 o'rnatilgan, lekin config eski `.eslintrc.json` formatida. `eslint.config.js` (flat config) kerak. `lint` script'i ham yo'q.
-- `npm run dev` va `npm run clean` bash sintaksisida — Windows'da yiqiladi (`cross-env`/`rimraf` o'rnatilgan, lekin ishlatilmagan).
 - `package.json` `main` → `dist/server.js`, lekin `start` → `dist/src/server.js`. swc chindan `dist/src/` ga chiqaradi.
 - `build` script'ida `-d dist/test` va `--out-dir dist` ikkalasi bir vaqtda.
 - Ortiqcha dep'lar: `nodemon`, `ts-node`, `ts-node-dev` (`tsx` yetarli). `rimraf` `dependencies` da.
