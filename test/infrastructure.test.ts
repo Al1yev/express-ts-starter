@@ -49,19 +49,19 @@ class ProbeRouter implements Routes {
     public router = Router();
 
     constructor() {
-        this.router.get(`${this.path}/ok`, (_req, res) => {
+        this.router.get('/ok', (_req, res) => {
             res.success({ injected: Container.get(ProbeService).read() });
         });
 
-        this.router.post(`${this.path}/dto`, ValidationMiddleware(ProbeDto), (req, res) => {
+        this.router.post('/dto', ValidationMiddleware(ProbeDto), (req, res) => {
             res.success(req.body);
         });
 
-        this.router.get(`${this.path}/http-error`, () => {
+        this.router.get('/http-error', () => {
             throw new HttpException(418, 'I am a teapot');
         });
 
-        this.router.get(`${this.path}/boom`, () => {
+        this.router.get('/boom', () => {
             throw new Error('kutilmagan ichki xato');
         });
     }

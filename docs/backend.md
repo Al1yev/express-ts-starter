@@ -22,6 +22,11 @@ Status kodlarini mantiqan tanlang: topilmadi = `404`, konflikt/dublikat = `409`,
 
 **404** — `app.ts` da catch-all `HttpException(404, ...)` beradi, shuning uchun noma'lum route ham bir xil JSON formatda qaytadi.
 
+## Qatlam chegaralari
+
+- **Controller `@models` dan import qilmaydi.** Controller HTTP ↔ service tarjimoni; u ko'radigan tiplar `@interfaces` dan (`User`), mongoose tiplaridan (`UserDocument`) emas. Service `.lean()` ga o'tsa yoki DTO qaytara boshlasa, controller o'zgarmasligi kerak. Mongoose tipi service qatlamida to'xtaydi.
+- **DI faqat service qatlamida.** `@Service()` + `Container.get(...)` — service uchun. Controller router ichida `new UserController()` bilan, router esa `src/server.ts` da `new UserRouter()` bilan yaratiladi. Controller yoki router'ga `@Service()` osmang.
+
 ## Validatsiya
 
 `ValidationMiddleware(Dto, skipMissingProperties?, whitelist?, forbidNonWhitelisted?)`.

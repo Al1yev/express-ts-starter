@@ -41,6 +41,8 @@ Alias'lar **uch joyda** e'lon qilingan va sinxron turishi shart:
 
 Yangi papka qo'shsangiz uchalasini ham yangilang, aks holda import yo tip darajasida, yo build'da sinadi. Har alias ikki qator bilan e'lon qilinadi: `"@x": ["x/index.ts"]` va `"@x/*": ["x/*"]`.
 
+**To'rtinchi joy yo'q va kerak emas.** `vitest.config.mts` da `resolve: { tsconfigPaths: true }`, `build:tsc` da `tsc-alias`, `dev` da `tsx` — uchalasi ham alias'ni `tsconfig.json` dan o'zi oladi. Ya'ni haqiqiy nusxa faqat bitta: `.swcrc` dagi `jsc.paths`. O'zgartirsangiz, `tsconfig.json` va `.swcrc` bir-biriga aynan mos turishi shart.
+
 Import'lar **doim alias orqali** — papkalararo nisbiy yo'l (`../`) ishlatilmaydi. Bir papka ichidagi `./` normal (`src/utils/index.ts` dagi `./text.utils`).
 
 ## Ulash nuqtalari — eng ko'p unutiladigan qadamlar
@@ -51,6 +53,26 @@ Import'lar **doim alias orqali** — papkalararo nisbiy yo'l (`../`) ishlatilmay
 | Yangi router     | `src/server.ts` dagi `new App([...])` massivi                   |
 | Yangi middleware | `src/app.ts` dagi `initializeMiddlewares()`                     |
 | Yangi papka      | `tsconfig.json` + `.swcrc` + barrel, so'ng shu faylni yangilash |
+
+### Router prefiksi — kim qo'yadi
+
+`Routes.path` **majburiy** va prefiksni **`app.ts` qo'yadi**: `this.app.use(route.path, route.router)`.
+
+Demak router ichida yo'llar **prefikssiz** yoziladi:
+
+```ts
+export class ProductRouter implements Routes {
+    public path = '/products'; // <- prefiks shu yerda, bir marta
+    public router = Router();
+
+    private initializeRoutes() {
+        this.router.get('/', this.product.getProducts); // -> GET /products
+        this.router.get('/:id', this.product.getProductById); // -> GET /products/:id
+    }
+}
+```
+
+`${this.path}` ni router ichida takrorlamang — yo'l ikki marta prefikslanadi (`/products/products`).
 
 ## Nom konvensiyalari
 

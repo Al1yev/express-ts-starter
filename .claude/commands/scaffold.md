@@ -21,7 +21,8 @@ Har birini mavjud `user.*` fayllaridan nusxa ol — ular shu loyihaning namunasi
        Skelet: metodlar hali implementatsiya qilinmagan. Logika yozilganda bu qatorni o'chiring. */
     ```
 5. `src/controllers/<name>.controller.ts` — `Container.get(<Name>Service)`, har metod `try/catch` + `next(error)`, javob `res.success(data, status?, message?)`
-6. `src/routers/<name>.router.ts` — `Routes` interface'ini implement qiladi, `ValidationMiddleware(Dto)` yozuv operatsiyalarida
+6. `src/routers/<name>.router.ts` — `Routes` interface'ini implement qiladi, `ValidationMiddleware(Dto)` yozuv operatsiyalarida.
+   **`path` majburiy** (`public path = '/<names>'`), va prefiksni `app.ts` qo'yadi — router ichida yo'llarni prefikssiz yoz: `this.router.get('/', ...)`, `this.router.get('/:id', ...)`. `${this.path}` ni takrorlasang yo'l ikki marta prefikslanadi.
 
 ## Ulash — buni unutish eng ko'p uchraydigan xato
 
@@ -34,6 +35,7 @@ Har birini mavjud `user.*` fayllaridan nusxa ol — ular shu loyihaning namunasi
 - **`204` ishlatma** — Express body'ni tashlab yuboradi va `{success, message, data}` kontrakti buziladi. `DELETE` uchun `200`.
 - `findByIdAndUpdate` chaqirsang `{ new: true, runValidators: true }` ber, aks holda **eski** hujjat qaytadi.
 - Import'lar path alias orqali (`@services`, `@dtos`), nisbiy yo'l bilan emas.
+- Controller `@models` dan import qilmaydi — tiplar `@interfaces` dan olinadi. Mongoose tipi service qatlamida to'xtaydi.
 - Yangi papka qo'shsang, alias'ni **uch joyda** e'lon qil: `tsconfig.json` (`paths`), `.swcrc` (`jsc.paths`), va papkaning `index.ts` barrel'i.
 
 ## Yakunda

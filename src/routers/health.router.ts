@@ -13,7 +13,7 @@ export class HealthRouter implements Routes {
     }
 
     private initializeRoutes() {
-        this.router.get(`${this.path}`, (_req: Request, res: Response) => {
+        this.router.get('/', (_req: Request, res: Response) => {
             // Readiness probe: DB'siz bu servis hech qanday foydali ish qila olmaydi,
             // shuning uchun ulanish yo'q bo'lsa `200 ok` qaytarish yolg'on bo'lardi.
             // Orkestrator status kodiga qaraydi - `503` uni trafikdan chiqaradi.

@@ -49,6 +49,6 @@
             "@utils": ["utils/index.ts"]
         }
     },
-    "include": ["src/**/*.ts", "src/**/*.json", ".env"],
+    "include": ["src/**/*.ts", "src/**/*.json"],
     "exclude": ["node_modules"]
 }

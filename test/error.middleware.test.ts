@@ -42,27 +42,28 @@ vi.mock('../src/config/index.ts', async (importOriginal) => {
 const SECRET_MESSAGE = 'mongodb://admin:super-secret-parol@10.0.0.5/prod-db ulanmadi';
 
 class ErrorProbeRouter implements Routes {
+    public path = '/err';
     public router = Router();
 
     constructor() {
-        this.router.get('/err/forbidden', () => {
+        this.router.get('/forbidden', () => {
             throw new HttpException(403, 'Ruxsat yo‘q: token eskirgan');
         });
 
-        this.router.get('/err/service-unavailable', () => {
+        this.router.get('/service-unavailable', () => {
             throw new HttpException(503, 'To‘lov provayderi javob bermadi');
         });
 
-        this.router.get('/err/unexpected', () => {
+        this.router.get('/unexpected', () => {
             throw new Error(SECRET_MESSAGE);
         });
 
-        this.router.get('/err/unexpected-async', async () => {
+        this.router.get('/unexpected-async', async () => {
             await Promise.resolve();
             throw new TypeError(SECRET_MESSAGE);
         });
 
-        this.router.get('/err/non-error', (_req, _res, next) => {
+        this.router.get('/non-error', (_req, _res, next) => {
             // Error bo'lmagan qiymat ham error handler'ga tushishi mumkin.
             next({ internal: SECRET_MESSAGE });
         });
