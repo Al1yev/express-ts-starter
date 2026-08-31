@@ -4,6 +4,32 @@ Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi. **Har bajarilgan is
 
 ---
 
+## 2026-08-31 — GitHub'ga push oldidan `.gitignore` kengaytirildi
+
+**Maqsad:** repo'ni ochiq GitHub'ga chiqarishdan oldin maxfiy fayllar tasodifan commit bo'lib qolmasligini kafolatlash.
+
+**Avval audit qilindi (topilma: sirlar oqmagan):**
+
+- Tracked fayllarda haqiqiy sir yo'q. `git grep` topgan `super-secret-parol` — `test/error.middleware.test.ts` dagi ataylab qo'yilgan fixture (xato maskalash testi), `password` esa `docs/backend.md` va `user.model.ts` dagi izohlar.
+- Tarixda `.env` bir marta commit qilingan (`9f74893`, keyin `3125862` da o'chirilgan), lekin ichida faqat `PORT=5000` bo'lgan — **tarixni qayta yozish shart emas**.
+- `.env.dev` va `.env.prod` allaqachon ignore holatida edi.
+
+**O'zgargan fayl:** `.gitignore` — qayta tuzildi va quyidagilar qo'shildi:
+
+- **Ichki papkalardagi env fayllar.** Avvalgi `/.env*` faqat root'ga tegishli edi, ya'ni `src/.env` yoki `config/.env.local` ignore qilinmasdi. Endi anchor'siz `.env` / `.env.*` qoidalari ham bor, `!/.env.example` va `!/.env.test` istisnolari esa ulardan **keyin** turadi (git'da oxirgi mos qoida yutadi).
+- **Kalit va hisob ma'lumotlari:** `*.pem`, `*.key`, `*.crt`, `*.p12`, `*.pfx`, `*.jks`, `id_rsa*`, `id_ed25519*`, `.npmrc` (npm auth token shu yerda turadi), `.netrc`, `credentials.json`, `service-account*.json`, `secrets.json`, `*.kubeconfig`.
+- **Build/log/tmp:** `/build`, `*.tsbuildinfo`, `*.log` va paket menejeri debug loglari, `/logs`, `/tmp`, `/.tmp`, `/.cache`.
+- **Deploy artefaktlari:** `/.vercel`, `/.serverless`, `/.terraform`, `*.tfstate*`.
+- **OS/muharrir:** `.DS_Store`, `Thumbs.db`, `desktop.ini`, `/.idea`, `/.vscode`, `*.swp`, `*~`.
+- **Claude Code:** mavjud `.claude/settings.local.json` ga `.claude/*.local.json` qo'shildi. `.claude/settings.json` (jamoa uchun umumiy: permission'lar va format hook'i) commit qilinaveradi.
+
+**Verifikatsiya:**
+
+- `git check-ignore -v` — `.env.dev`, `.env.prod`, `src/.env`, `config/.env.local`, `certs/server.key`, `deploy/id_rsa` ignore qilinadi; `.env.example` va `.env.test` esa **ignore qilinmaydi** (istisnolar buzilmagan).
+- `git ls-files | git check-ignore --stdin` — bo'sh: hozir tracked bo'lgan birorta fayl yangi qoidalar ostida qolib ketmadi.
+
+---
+
 ## 2026-08-31 — Struktura auditidagi barcha nomuvofiqliklar tuzatildi
 
 **Maqsad:** oldingi yozuvdagi P1–P4 topilmalarini yopish. Ikkala ochiq savolga foydalanuvchi javob berdi: `abstract.model.ts` o'chiriladi, `Routes.path` tiriltiriladi.
