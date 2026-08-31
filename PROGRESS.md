@@ -4,6 +4,47 @@ Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi. **Har bajarilgan is
 
 ---
 
+## 2026-08-31 — `baseUrl` olib tashlandi, `paths` tsconfig'ga nisbatan yozildi
+
+**Muammo:** yangi TypeScript (6.x) yana bir deprecation xatosi bergan: `Option 'baseUrl' is deprecated and will stop functioning in TypeScript 7.0`. Bu quyidagi `moduleResolution` migratsiyasi bilan bir turkumdagi ish.
+
+**Qaror:** `"ignoreDeprecations": "6.0"` bu safar ham ishlatilmadi (`tsc@5.8.3` uni rad etadi). `baseUrl` shunchaki olib tashlandi: usiz `paths` qiymatlari **tsconfig fayli turgan papkaga** nisbatan hal qilinadi, ya'ni har bir alias `./src/` prefiksini oladi.
+
+**O'zgargan fayllar:**
+
+- `tsconfig.json` — `"baseUrl": "src"` o'chirildi; 23 ta `paths` yozuvi qayta yozildi (`"@utils": ["utils/index.ts"]` → `["./src/utils/index.ts"]`).
+- `docs/structure.md` — alias bo'limi yangilandi: endi `tsconfig.json` va `.swcrc` da **prefiks har xil**. `.swcrc` dagi `jsc.baseUrl: "src"` **o'zgartirilmadi** — u swc'ning o'z sozlamasi va TS deprecation'iga aloqasi yo'q.
+
+**Verifikatsiya:**
+
+- `npm run type-check` — ikkala tsconfig ham xatosiz.
+- `npm test` — 58/58 o'tdi (vitest'ning `resolve.tsconfigPaths` baseUrl'siz konfiguratsiyani tushunadi).
+- `npm run build:tsc` (toza `dist` ustidan) — `tsc-alias` alias'larni to'liq yechdi: `dist/` da birorta `require("@...")` qolmadi.
+- `npx tsx --eval "import('@utils')"` — `dev` yo'lida ham alias ishlaydi.
+- `npm run lint` va `prettier --check` — toza.
+
+---
+
+## 2026-08-31 — `moduleResolution` node10 dan `node16` ga ko'chirildi
+
+**Muammo:** IDE'dagi yangi TypeScript (6.x) `tsconfig.json` ga xato bergan: `Option 'moduleResolution=node10' is deprecated and will stop functioning in TypeScript 7.0`. Loyihada o'rnatilgan `typescript@5.8.3` bu xatoni hali chiqarmaydi, shuning uchun `npm run type-check` toza o'tayotgan edi.
+
+**Qaror:** xabar taklif qilgan `"ignoreDeprecations": "6.0"` **ishlatilmadi** — u TS 6.0 dan boshlab tanilgan, `tsc@5.8.3` esa uni yaroqsiz qiymat deb rad etadi, ya'ni lokal `type-check` sinardi. O'rniga sozlama haqiqatan ko'chirildi.
+
+**O'zgargan fayllar:**
+
+- `tsconfig.json` — `module: "commonjs"` + `moduleResolution: "node"` → **`module: "node16"` + `moduleResolution: "node16"`** (ikkalasi juft yuradi; `bundler` bu yerga to'g'ri kelmaydi, u `module: esnext/preserve` ni talab qiladi). `package.json` da `"type"` maydoni yo'q, shuning uchun `node16` baribir **CommonJS** emit qiladi — runtime xulqi va `.swcrc` (`module.type: "commonjs"`) bilan mosligi o'zgarmadi.
+- `docs/testing.md` — top-level `await` haqidagi eslatmada `module: commonjs` → `module: node16` (CommonJS emit).
+
+**Verifikatsiya:**
+
+- `npm run type-check` — `tsc --noEmit` va `tsc -p tsconfig.test.json` ikkalasi ham xatosiz.
+- `npm test` — 4 fayl / 58 test, hammasi o'tdi.
+- `npm run build:tsc` — muvaffaqiyatli; `dist/src/server.js` avvalgidek CJS (`"use strict"` + `require(...)`), `tsc-alias` alias'larni to'g'ri yozdi.
+- `npx prettier --check` — toza.
+
+---
+
 ## 2026-08-31 — GitHub'ga push oldidan `.gitignore` kengaytirildi
 
 **Maqsad:** repo'ni ochiq GitHub'ga chiqarishdan oldin maxfiy fayllar tasodifan commit bo'lib qolmasligini kafolatlash.
