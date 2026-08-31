@@ -39,7 +39,10 @@ Alias'lar **uch joyda** e'lon qilingan va sinxron turishi shart:
 2. `.swcrc` — `jsc.paths`
 3. Papkaning o'z `index.ts` barrel eksporti
 
-Yangi papka qo'shsangiz uchalasini ham yangilang, aks holda import yo tip darajasida, yo build'da sinadi. Har alias ikki qator bilan e'lon qilinadi: `"@x": ["x/index.ts"]` va `"@x/*": ["x/*"]`.
+Yangi papka qo'shsangiz uchalasini ham yangilang, aks holda import yo tip darajasida, yo build'da sinadi. Har alias ikki qator bilan e'lon qilinadi, lekin **prefiks ikki faylda har xil**:
+
+- `tsconfig.json` da `baseUrl` yo'q (TS 6.0 da deprecated), shuning uchun yo'llar tsconfig papkasiga nisbatan: `"@x": ["./src/x/index.ts"]` va `"@x/*": ["./src/x/*"]`.
+- `.swcrc` da `jsc.baseUrl: "src"` saqlanib qolgan (bu swc'ning o'z sozlamasi, TS deprecation'iga aloqasi yo'q): `"@x": ["x/index.ts"]` va `"@x/*": ["x/*"]`.
 
 **To'rtinchi joy yo'q va kerak emas.** `vitest.config.mts` da `resolve: { tsconfigPaths: true }`, `build:tsc` da `tsc-alias`, `dev` da `tsx` — uchalasi ham alias'ni `tsconfig.json` dan o'zi oladi. Ya'ni haqiqiy nusxa faqat bitta: `.swcrc` dagi `jsc.paths`. O'zgartirsangiz, `tsconfig.json` va `.swcrc` bir-biriga aynan mos turishi shart.
 

@@ -27,7 +27,7 @@ Test fayllari `test/` ichida, `*.test.ts`. Alias'lar u yerda ham ishlaydi (Vite 
 
 1. **env `process.exit(1)` xavfi.** `env.config.ts` modul yuklanganda validatsiya qiladi; xato bo'lsa jarayon **jim o'ladi**. `test/setup.ts` `process.env` ni oldindan to'ldiradi (dotenv mavjud o'zgaruvchini almashtirmaydi, shuning uchun in-memory DB qiymatlari ustun turadi). `.env.test` commit qilingan — `.gitignore` da `!/.env.test` istisnosi bor.
 2. **Dekorator metadatasi.** Vitest'ning default esbuild transformeri `emitDecoratorMetadata` ni qo'llab-quvvatlamaydi, loyiha esa typedi va class-validator dekoratorlariga tayanadi. `unplugin-swc` mavjud `.swcrc` ni qayta ishlatadi — build bilan test o'rtasida farq yo'q.
-3. **`test/setup.ts` da top-level `await` ishlatmang** — `module: commonjs` da `tsc` dan o'tmaydi. Async ish `global-setup.ts` ga tegishli.
+3. **`test/setup.ts` da top-level `await` ishlatmang** — `module: node16` (CommonJS emit) da `tsc` dan o'tmaydi. Async ish `global-setup.ts` ga tegishli.
 
 Qo'shimcha: har worker o'z bazasida ishlaydi (`test_<pid>`), shuning uchun `clearTestDb()` qo'shni test faylini buzmaydi.
 
