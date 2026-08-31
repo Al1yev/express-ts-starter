@@ -4,6 +4,83 @@ Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi. **Har bajarilgan is
 
 ---
 
+## 2026-08-31 — Struktura auditidagi barcha nomuvofiqliklar tuzatildi
+
+**Maqsad:** oldingi yozuvdagi P1–P4 topilmalarini yopish. Ikkala ochiq savolga foydalanuvchi javob berdi: `abstract.model.ts` o'chiriladi, `Routes.path` tiriltiriladi.
+
+### P1 — `Routes.path` tiriltirildi
+
+`src/interfaces/router.interface.ts` — `path?: string` → **`path: string`** (majburiy). Ixtiyoriy bo'lganda uni unutish jimgina `/` ga o'rnatilishga olib kelardi; majburiy qilish bu xatoni kompilyatsiya vaqtida ushlaydi.
+
+`src/app.ts:57` — `this.app.use('/', route.router)` → `this.app.use(route.path, route.router)`.
+
+Prefiks endi **bitta joyda** qo'yiladi, shuning uchun router'lardan ichki `${this.path}` takrori olib tashlandi:
+
+- `src/routers/user.router.ts` — `/users` → `'/'`, `/users/:id` → `'/:id'`
+- `src/routers/health.router.ts` — `/health` → `'/'`
+- `test/infrastructure.test.ts` — `ProbeRouter` yo'llari prefikssiz
+- `test/error.middleware.test.ts` — `ErrorProbeRouter` da `path` umuman yo'q edi (shuning uchun tip xatosi berdi); `path = '/err'` qo'shildi va yo'llardan `/err` prefiksi olib tashlandi
+
+Tashqi URL'lar **o'zgarmadi** — 58 ta test ham o'zgartirilmagan tasdiqlar bilan o'tdi.
+
+### P1 — `src/models/abstract.model.ts` o'chirildi
+
+0 baytli, hech kim import qilmagan, barrel'da yo'q edi. `git rm`.
+
+### P2 — `database` konvensiyaga qaytarildi
+
+`src/database/index.ts` → `src/database/mongo.database.ts` (`git mv`), barrel esa bir qatorga aylandi: `export { dbConnection, isDbConnected } from './mongo.database';`
+
+Uch narsa tuzaldi: `camelCase.<layer>.ts` konvensiyasi tiklandi, `@database/*` subpath'i endi haqiqiy faylga olib boradi, va eng muhimi — `vitest.config.mts:39` dagi `coverage.exclude: ['src/**/index.ts']` endi bu jonli logikani **chiqarib tashlamaydi**. `test/helpers/db.helper.ts` dagi `from '@database'` import'i o'zgarmadi.
+
+### P3 — controller ↔ model tip chegarasi
+
+`src/controllers/user.controller.ts` dan `import { UserDocument } from '@models'` olib tashlandi; uchala metod endi `User` ishlatadi (`findAllUsersData` allaqachon shunday edi — fayl ichidagi ikkixillik ham yo'qoldi).
+
+**Qabul qilingan qoida:** mongoose tipi **service qatlamida to'xtaydi**. `UserService` hamon `UserDocument` qaytaradi (service → model qo'shnichiligi qonuniy), lekin `HydratedDocument<User>` `User` ga tayinlanadi, shuning uchun service keyinchalik `.lean()` ga o'tsa yoki DTO qaytara boshlasa controller o'zgarmaydi. Aynan shu sinishdan qochish uchun qilindi.
+
+### P4 — mayda tozalash
+
+- `tsconfig.json:52` — `include` dan `".env"` olib tashlandi (TS fayl emas, ta'sirsiz qoldiq)
+- `src/middlewares/index.ts`, `src/routers/index.ts` — eksportlar alifbo tartibiga solindi
+
+### Hujjatlar
+
+- `docs/structure.md` — "Router prefiksi — kim qo'yadi" bo'limi kod misoli bilan qo'shildi; alias bo'limiga "to'rtinchi joy yo'q" izohi kiritildi (`vitest` `tsconfigPaths: true` orqali, `tsc-alias` va `tsx` ham `tsconfig.json` dan oladi — yagona qo'lda saqlanadigan nusxa `.swcrc`)
+- `docs/backend.md` — yangi "Qatlam chegaralari" bo'limi: controller `@models` dan import qilmaydi; DI faqat service qatlamida
+- `.claude/commands/scaffold.md` — router qadamiga `path` majburiyligi va prefikssiz yo'llar qoidasi; konvensiyalarga controller/model chegarasi
+
+**Verifikatsiya:** `npm run type-check` ✅ (`tsc --noEmit` + `tsconfig.test.json`), `npm test` ✅ 4 fayl / 58 test, `npm run lint` ✅ toza.
+
+---
+
+## 2026-08-31 — `arch` agenti bilan birinchi struktura auditi
+
+**Maqsad:** yangi qo'shilgan `arch` agentini haqiqiy vazifada sinash va loyihaning strukturaviy holatiga baho olish. **Kod o'zgartirilmadi** — bu faqat audit yozuvi; tavsiyalar hali bajarilmagan.
+
+**Toza chiqqan tekshiruvlar:** 11/11 papkada `index.ts` bor; `tsconfig.json` ↔ `.swcrc` alias'lari bayt-ma-bayt bir xil (23 yozuv); ikkala router ham `server.ts` da ro'yxatdan o'tgan; `src/` va `test/` da papkalararo `../` import yo'q; nomlash (`name.<layer>.ts`, PascalCase klasslar) izchil.
+
+**Aniqlangan nomuvofiqliklar:**
+
+| Prioritet | Joy                                    | Muammo                                                                                                                                                                                                               |
+| --------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1        | `src/app.ts:56-60`                     | `route.path` hech qachon o'qilmaydi — `this.app.use('/', route.router)`. `Routes.path?` o'lik kontrakt: yangi router muallifi `path` ga suyansa, endpoint jimgina `/` ga tushadi                                     |
+| P1        | `src/models/abstract.model.ts`         | 0 baytli, hech kim import qilmaydi, barrel'da yo'q — `14af7eb` dan qolgan                                                                                                                                            |
+| P2        | `src/database/index.ts`                | Yagona barrel-ichida-implementatsiya; `<name>.database.ts` yo'q, `@database/*` subpath bo'sh, va `vitest.config.mts:39` dagi `coverage.exclude: ['src/**/index.ts']` tufayli jonli logika coverage'dan chiqib ketgan |
+| P3        | `src/controllers/user.controller.ts:5` | Controller `@models` dan `UserDocument` import qiladi; bir fayl ichida `User[]` va `UserDocument` aralash                                                                                                            |
+| P4        | `tsconfig.json:52`                     | `include` da `".env"` — qoldiq, ta'sirsiz                                                                                                                                                                            |
+
+**Aniqlangan fakt:** alias'ning "uchinchi joyi" yo'q. `vitest.config.mts:15` da `resolve: { tsconfigPaths: true }` (Vite 8.2.2 qo'llab-quvvatlaydi), `build:tsc` → `tsc-alias`, `dev` → `tsx` — hammasi `tsconfig.json` ni o'qiydi. Haqiqiy manba **ikkita**: `tsconfig.json` va `.swcrc`. `CLAUDE.md` va `docs/structure.md` dagi "uch joy" formulasi aniqlashtirilishi kerak.
+
+**Ochiq savollar (foydalanuvchi qarori kutilmoqda):**
+
+1. `abstract.model.ts` — kelajak uchun rejami yoki qoldiqmi?
+2. `Routes.path` tiriltirilsinmi (`app.ts` + barcha router'lar tegadi), yoki hujjatda "router o'z prefiksini ichkarida qo'yadi" deb qotirilsinmi?
+
+**Verifikatsiya:** o'zgarish bo'lmagani uchun `type-check`/`test` ishga tushirilmadi.
+
+---
+
 ## 2026-08-31 — `arch` agenti va kontekstni mavzu bo'yicha ajratish
 
 **Maqsad:** (1) "yangi narsa qayerga tegishli" degan savolga javob beradigan agent yo'q edi; (2) `CLAUDE.md` har sessiyaga **va har bir subagent chaqiruviga** avtomatik yuklanadi, shuning uchun undagi har ortiqcha qator har chaqiruvda token sarflardi.
