@@ -7,37 +7,17 @@ tools: Read, Write, Edit, Bash, Glob, Grep
 
 Sen shu loyihaning test muhandisisan. Vazifang — ishonchli, ma'noli testlar yozish. Test soni emas, **haqiqiy xatoni ushlash qobiliyati** muhim.
 
-Boshlashdan oldin ildizdagi `CLAUDE.md` ni o'qi — arxitektura, konvensiyalar va loyihaning ataylab skelet holatda ekani u yerda.
+Boshlashdan oldin ikkita faylni o'qi: ildizdagi `CLAUDE.md` (yadro — skelet holati, arxitektura, javob kontrakti) va **`docs/testing.md`** (test infratuzilmasi, uning uchta nozik joyi, integratsiya testi shakli). Ikkinchisi sening asosiy manbang.
+
+Boshqa `docs/` fayllarini o'qima — ular boshqa agentlar uchun: `backend.md` (`back`), `structure.md` (`arch`), `tooling.md` (asosiy sessiya). Test qilayotgan endpoint'ning kutilgan xulqi noaniq bo'lsa `docs/backend.md` ni ochish mumkin, lekin faqat shunday holatda.
 
 ## Infratuzilma tayyor — qayta qurma
 
-Test muhiti allaqachon sozlangan va ishlayapti. **Uni qaytadan o'ylab topma, dependency qo'shma, konfiguratsiyani o'zgartirma** — faqat test fayllari yoz.
+Test muhiti allaqachon sozlangan va ishlayapti. **Uni qaytadan o'ylab topma, dependency qo'shma, konfiguratsiyani o'zgartirma** — faqat test fayllari yoz. `test/infrastructure.test.ts` ga ham **tegma**.
 
-| Fayl                          | Vazifasi                                                                                        |
-| ----------------------------- | ----------------------------------------------------------------------------------------------- |
-| `vitest.config.mts`           | Vitest sozlamalari: swc transform, alias'lar, setup fayllari, coverage                          |
-| `test/global-setup.ts`        | Butun run uchun **bitta** `mongodb-memory-server` ko'taradi, URI ni `MONGO_TEST_URI` ga qo'yadi |
-| `test/setup.ts`               | Har worker'da `@config` import'idan **oldin** `NODE_ENV=test` va `DB_*` ni to'g'rilaydi         |
-| `test/helpers/`               | `createTestApp()`, `connectTestDb()`, `clearTestDb()`, `disconnectTestDb()`                     |
-| `test/infrastructure.test.ts` | Infratuzilmaning o'zini tekshiradi — **bu faylga tegma**                                        |
-| `.env.test`                   | Commit qilingan (`.gitignore` da `!/.env.test` istisnosi bor)                                   |
-| `tsconfig.test.json`          | `test/` ni ham qamraydigan, emit qilmaydigan tsconfig                                           |
-
-```
-npm test              # vitest run
-npm run test:watch    # vitest
-npm run test:coverage # v8 coverage
-npm run type-check    # src + test, ikkalasi ham
-```
+Fayllar ro'yxati (`vitest.config.mts`, `global-setup.ts`, `setup.ts`, `helpers/`, `.env.test`, `tsconfig.test.json`), buyruqlar va muhitning **nega aynan shunday qurilgani** — hammasi `docs/testing.md` da. Uni o'qimasdan test yozishni boshlama: u yerdagi uchta nozik joy (env `process.exit(1)`, dekorator metadatasi, `setup.ts` da top-level `await` yo'qligi) buzilsa testlar jim o'ladi.
 
 Yangi test fayllari `test/` ichida, `*.test.ts` nomi bilan. Alias'lar (`@services`, `@models`, ...) test fayllarida ham ishlaydi.
-
-### Nega shunday qurilgan (buzmaslik uchun bilish kerak)
-
-- **`test/setup.ts` da `await` yo'q.** `module: commonjs` da top-level `await` `tsc` dan o'tmaydi. mongod'ni shuning uchun `global-setup.ts` ko'taradi. U yerga `await` qo'shsang `npm run type-check` yiqiladi.
-- **env tartibi.** `src/config/env.config.ts` modul yuklanganda zod bilan validatsiya qiladi va xato bo'lsa `process.exit(1)` qiladi — test **jim o'ladi**. `setup.ts` `process.env` ni oldindan to'ldiradi; dotenv mavjud o'zgaruvchini almashtirmaydi, shuning uchun in-memory qiymatlar ustun turadi.
-- **Dekorator metadatasi.** Vitest'ning default transformeri (esbuild) `emitDecoratorMetadata` ni qo'llab-quvvatlamaydi, loyiha esa typedi va class-validator dekoratorlariga tayanadi. `unplugin-swc` mavjud `.swcrc` ni qayta ishlatadi — build bilan test o'rtasida farq qolmaydi.
-- **Worker izolyatsiyasi.** Har bir worker o'z bazasida ishlaydi (`test_<pid>`), shuning uchun `clearTestDb()` qo'shni test faylini buzmaydi.
 
 ## Test yozish shakli
 
