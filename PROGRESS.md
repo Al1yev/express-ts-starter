@@ -1,6 +1,66 @@
 # PROGRESS
 
-Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi.
+Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi. **Har bajarilgan ishdan keyin yozuv qo'shiladi** — asosiy sessiya tomonidan, subagentlar emas.
+
+---
+
+## 2026-08-31 — `arch` agenti va kontekstni mavzu bo'yicha ajratish
+
+**Maqsad:** (1) "yangi narsa qayerga tegishli" degan savolga javob beradigan agent yo'q edi; (2) `CLAUDE.md` har sessiyaga **va har bir subagent chaqiruviga** avtomatik yuklanadi, shuning uchun undagi har ortiqcha qator har chaqiruvda token sarflardi.
+
+### 1. `arch` agenti qo'shildi
+
+`.claude/agents/arch.md` — `model: opus`, `tools: Read, Glob, Grep, Bash`.
+
+`lead` da bo'lgani kabi **`Write`/`Edit` ataylab yo'q**: agent qaror qaytaradi, amalni `back` yoki asosiy sessiya bajaradi. Bu roli aniq qiladi va `back` bilan fayl konfliktini yo'qotadi — aks holda ikkalasi bir vaqtda `index.ts` ga yozardi.
+
+Nima qiladi:
+
+- **Joylashuv qarori** — yangi fayl/papka uchun aniq yo'l, nom, barrel qatori, alias qatorlari (uch joy), `app.ts`/`server.ts` dagi ulash nuqtasi
+- **Drift auditi** — beshta tekshiruv: har papkada `index.ts` bormi; har fayl barrel'da eksportmi; `tsconfig.json` ↔ `.swcrc` alias'lari mosmi; har router `server.ts` da ro'yxatdanmi; `src/` da papkalararo `../` import bormi
+
+**Nega kerak edi:** `/scaffold` strukturaviy ulash qoidalarini faqat **yangi entity** uchun qoplaydi. Entity bo'lmagan qo'shimchalar — middleware, util, config, `jobs/` kabi cross-cutting papka — hech kimning mas'uliyatida emas edi.
+
+**Qabul qilingan qarorlar:**
+
+- Yangi papka uchun **yuqori bo'sag'a**: bu boilerplate, har qatlam undan yaratiladigan barcha loyihalarga meros bo'ladi. Kamida ikkita foydalanuvchi bo'lmasa — mavjud papkaga joylashtiriladi.
+- Auditi **faqat struktura** bilan cheklangan; tiplar, build va HTTP kontrakti `/verify` da qoladi — takrorlanmaydi.
+- Promptga "bular drift emas" ro'yxati kiritildi (skelet servislar, bo'sh DTO), aks holda agent birinchi auditda yolg'on xato berardi.
+
+`lead.md` yangilandi: yo'naltirish jadvaliga `arch` qo'shildi ("uchtasidan" → "to'rttasidan") va qoida kiritildi — joylashuv noaniq bo'lsa `back` dan **oldin** `arch` dan so'raladi.
+
+### 2. Kontekst mavzu bo'yicha ajratildi
+
+`CLAUDE.md` **136 → 50 qator**. Qolgani to'rtta faylga chiqarildi:
+
+| Fayl                | Qator | Kim o'qiydi    | Nima ko'chdi                                                                                                                    |
+| ------------------- | ----- | -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/backend.md`   | 66    | `back`         | Konvensiyalar, xato maskalash, validatsiya + bo'sh DTO g'alatiligi, env, `/health`, mongoose tuzoqlari, skelet `eslint-disable` |
+| `docs/structure.md` | 65    | `arch`         | Papka kartasi, alias'lar (uch joy), ulash nuqtalari, nom konvensiyalari                                                         |
+| `docs/testing.md`   | 40    | `tester`       | Test infratuzilmasi, uchta nozik joy, integratsiya shakli, test lint qoidasi                                                    |
+| `docs/tooling.md`   | 43    | asosiy sessiya | Script'lar jadvali, husky hook'lari, ESLint konfiguratsiyasi                                                                    |
+
+`CLAUDE.md` da qolgani: skelet holati, arxitektura oqimi, to'rtta buzilmaydigan qoida va "qayerda nima yozilgan" jadvali.
+
+**Faqat `CLAUDE.md` ni bo'lish yetarli emas edi** — agent promptlarining o'zi ham xuddi shu ma'lumotni takrorlab turgan edi. Shuning uchun:
+
+- `back.md` — konvensiyalar bloki 24 qatordan 7 qatorlik eslatma ro'yxatiga
+- `tester.md` — infratuzilma jadvali + "nega shunday qurilgan" bo'limi 3 qatorlik havolaga
+- `arch.md` — papka kartasi va nomlash jadvallari `docs/structure.md` ga havolaga
+
+Har fakt endi **aynan bitta faylda** turadi. Har agent promptida "o'z faylingni o'qi, boshqalarnikini o'qima" ko'rsatmasi bor.
+
+### 3. Verifikatsiya
+
+- Eski `CLAUDE.md` ning 12 ta kalit fakti (`forbidUnknownValues`, `runValidators`, `projectService`, `emitDecoratorMetadata`, `pre-push`, `z.infer` va h.k.) yangi fayllarda topildi — hech biri yo'qolmadi.
+- `arch` promptidagi beshta audit buyrug'i **haqiqatan ishga tushirildi**: 11 papkada `index.ts` bor, `tsconfig.json` ↔ `.swcrc` alias'lari aynan mos (diff bo'sh), ikkala router `src/server.ts:7` da ro'yxatda, `src/` da papkalararo `../` import yo'q.
+- Barcha nisbiy havolalar mavjud fayllarga boradi.
+- `npx prettier --check .` toza (pre-commit hook'dan o'tadi). `src/` ga tegilmadi.
+
+### 4. Qabul qilingan ish tartibi
+
+- **Har bajarilgan ishdan keyin `PROGRESS.md` ga yozuv qo'shiladi** — alohida so'ralishini kutmasdan.
+- **`CLAUDE.md` faqat yadro bo'lib qoladi.** Yangi ma'lumot yozishdan oldin savol: buni hamma o'qishi kerakmi? Yo'q bo'lsa — tegishli `docs/` fayliga.
 
 ---
 
