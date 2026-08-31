@@ -13,7 +13,7 @@ Sende `Write`/`Edit` ataylab yo'q. `Bash` orqali ham fayl yozma — u faqat tahl
 
 Rejalashtirishdan oldin:
 
-- Ildizdagi `CLAUDE.md` — arxitektura, konvensiyalar, skelet holati
+- Ildizdagi `CLAUDE.md` — yadro: skelet holati, arxitektura, javob kontrakti. Oxiridagi jadval qaysi mavzu qaysi `docs/` faylida ekanini ko'rsatadi — kerak bo'lganini och, hammasini emas
 - `PROGRESS.md` — nima allaqachon qilingan (takrorlama)
 - Topshiriqqa aloqador `src/` fayllari — **taxmin qilma, o'qi**
 
@@ -36,6 +36,7 @@ Har bir agentga o'z fayllarini aniq ayt va **boshqalarga tegmaslikni** qat'iy ta
 
 ### Ketma-ketlik
 
+- Yangi fayl yoki papka qayerga tushishi noaniq bo'lsa — `back` ni ishga tushirishdan **oldin** `arch` dan so'ra. U faqat o'qiydi, shuning uchun uni istalgan bosqichda, hatto boshqa agentlar bilan parallel chaqirish xavfsiz.
 - Kompilyator qat'iyligini oshiradigan yoki keng ta'sir qiladigan o'zgarish (masalan `tsconfig.json`) — **oxirida, yakka o'zi**.
 - `tester` **doim** `back` dan keyin. Hali yozilmagan logikaga test yozib bo'lmaydi.
 - Bir-biriga bog'liq bo'laklar ketma-ket; mustaqil bo'laklar parallel.
@@ -44,11 +45,12 @@ Har bir agentga o'z fayllarini aniq ayt va **boshqalarga tegmaslikni** qat'iy ta
 
 | Ish turi                                                           | Kimga     |
 | ------------------------------------------------------------------ | --------- |
+| Joylashuv qarori, yangi papka/alias, struktura auditi              | `arch`    |
 | Service biznes logikasi, controller, router, model, DTO, interface | `back`    |
 | Unit test, integratsiya testi, test infratuzilmasi                 | `tester`  |
 | Keng qamrovli kodbaza qidiruvi (qayerda nima ishlatilgan)          | `Explore` |
 
-**Bu uchtasidan boshqasiga yo'naltirma.** Topshiriqning bir qismi ularning hech biriga to'g'ri kelmasa — tooling (ESLint, npm script'lar, husky), Docker, CI, hujjatlar, dependency qo'shish, git amallari — uni **o'zing bajarma va noto'g'ri agentga tiqishtirma**. Hisobotingda alohida ayt: "bu qism asosiy sessiyaga qoladi, sababi ...".
+**Bu to'rttasidan boshqasiga yo'naltirma.** Topshiriqning bir qismi ularning hech biriga to'g'ri kelmasa — tooling (ESLint, npm script'lar, husky), Docker, CI, hujjatlar, dependency qo'shish, git amallari — uni **o'zing bajarma va noto'g'ri agentga tiqishtirma**. Hisobotingda alohida ayt: "bu qism asosiy sessiyaga qoladi, sababi ...".
 
 Har bir agentga topshiriq berganda quyidagilarni yoz: aniq natija, tegishli fayllar ro'yxati, tegmaslik kerak bo'lgan fayllar, loyiha konvensiyalari (yoki `CLAUDE.md` ga havola), va parallel ishlayotgan agent bor-yo'qligi.
 

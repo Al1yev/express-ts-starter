@@ -1,6 +1,6 @@
 # `.claude/`
 
-Bu loyihaning Claude Code sozlamalari. Loyiha kontekstining o'zi ildizdagi [`CLAUDE.md`](../CLAUDE.md) da (har sessiyada avtomatik yuklanadi), bajarilgan ishlar jurnali esa [`PROGRESS.md`](../PROGRESS.md) da.
+Bu loyihaning Claude Code sozlamalari. Loyiha kontekstining yadrosi ildizdagi [`CLAUDE.md`](../CLAUDE.md) da (har sessiyada avtomatik yuklanadi), mavzu bo'yicha batafsil hujjatlar [`docs/`](../docs/) da, bajarilgan ishlar jurnali esa [`PROGRESS.md`](../PROGRESS.md) da.
 
 ```
 .claude/
@@ -12,6 +12,7 @@ Bu loyihaning Claude Code sozlamalari. Loyiha kontekstining o'zi ildizdagi [`CLA
 │   └── scaffold.md        # /scaffold <EntityName>
 ├── agents/                # loyiha subagentlari
 │   ├── lead.md            # tahlil qiladi, bo'laklarga ajratadi, yo'naltiradi
+│   ├── arch.md            # nima qayerga tushishini belgilaydi, strukturani tekshiradi
 │   ├── back.md            # backend logikasini yozadi
 │   └── tester.md          # test yozadi
 └── hooks/
@@ -53,21 +54,23 @@ Shaxsiy sozlamalar uchun (gitignore qilingan). Masalan `defaultMode`, o'zingizga
 | Agent    | Vazifasi                                                                                                        | Tools                                 |
 | -------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `lead`   | Topshiriqni tahlil qiladi, bo'laklarga ajratadi, `back`/`tester` ga yo'naltiradi, natijani mustaqil tekshiradi. | `Read, Glob, Grep, Bash, Agent`       |
+| `arch`   | Yangi narsa qayerga tushishini belgilaydi (fayl, barrel, alias) va strukturaviy driftni topadi.                 | `Read, Glob, Grep, Bash`              |
 | `back`   | Qatlamli struktura asosida backend logikasi: service, controller, router, model, DTO.                           | `Read, Write, Edit, Bash, Glob, Grep` |
 | `tester` | Service unit testlari, middleware testlari, supertest orqali route integratsiya testlari.                       | `Read, Write, Edit, Bash, Glob, Grep` |
 
 | Agent    | Model     | Nega                                                                                                                  |
 | -------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
 | `lead`   | `inherit` | Yo'naltirish va verifikatsiya asosiy sessiya bilan bir xil darajada bo'lsin.                                          |
+| `arch`   | `opus`    | Joylashuv qarori butun loyiha bo'ylab ta'sir qiladi va xato qaror keyinchalik ko'chirish talab qiladi.                |
 | `back`   | `sonnet`  | Aniq belgilangan qatlamli strukturaga kod yozish — tez va arzon.                                                      |
 | `tester` | `opus`    | Test yozish qiyinroq: xato yo'llarini o'ylab topish, `vi.mock` kabi tuzoqlarni ko'rish, yolg'on yashil testni sezish. |
 
 ### Ish oqimi
 
 ```
-topshiriq → lead → tahlil → bo'laklar (fayl egaligi bilan)
-                              ├── back    (logika)
-                              └── tester  (test, back'dan keyin)
+topshiriq → lead → tahlil → [arch] joylashuv noaniq bo'lsa → bo'laklar (fayl egaligi bilan)
+                                                              ├── back    (logika)
+                                                              └── tester  (test, back'dan keyin)
                           → lead verifikatsiya qiladi → hisobot
 ```
 
@@ -76,7 +79,8 @@ topshiriq → lead → tahlil → bo'laklar (fayl egaligi bilan)
 ### Mas'uliyat chegaralari
 
 - `back` logika yozadi, test yozmaydi. `tester` test yozadi, logikani "tuzatmaydi" — yiqilgan test haqiqiy bugni ko'rsatsa, xabar beradi.
-- `lead` faqat `back`, `tester` va `Explore` ga yo'naltiradi. Tooling, Docker, CI, hujjatlar, dependency, git — bular agentlarga emas, asosiy sessiyaga qaytariladi.
+- `arch` **qaror qiladi, `back` bajaradi**. Unda ham `Write`/`Edit` yo'q, `lead` dagi bilan bir sababdan: roli aniq qoladi va ikki agent bir vaqtda `index.ts` ga yozib qo'ymaydi.
+- `lead` faqat `arch`, `back`, `tester` va `Explore` ga yo'naltiradi. Tooling, Docker, CI, hujjatlar, dependency, git — bular agentlarga emas, asosiy sessiyaga qaytariladi.
 - Hech biri `PROGRESS.md` ga yozmaydi — jurnalni asosiy sessiya yuritadi, parallel yozuv konfliktga olib keladi.
 
 ### `lead` promptiga kodlashtirilgan tajriba
@@ -86,6 +90,25 @@ Bu qoidalar shu loyihada amalda o'rganilgan:
 - **Fayl egaligi.** Parallel agentlar hech qachon bir faylga tegmasin; ishga tushirishdan oldin ro'yxatlar solishtiriladi. Agentga boshqasi hali tugatmagan fayldagi o'tkinchi `type-check` xatosi haqida oldindan aytiladi, aks holda u "tuzatishga" urinadi.
 - **Keng ta'sirli o'zgarish oxirida, yakka.** Masalan `tsconfig.json` qat'iyligini oshirish.
 - **Agent hisoboti dalil emas.** Bir agent xato-ishlovchini "tuzatdim" dedi va `type-check` toza edi, lekin dev rejimida haqiqiy xato xabari o'rniga generic matn qaytarardi — buni faqat endpoint'ni haqiqatan chaqirib ko'rish aniqladi. Shuning uchun `lead` har doim o'zi tekshiradi.
+
+### Har agent faqat o'z hujjatini o'qiydi
+
+`CLAUDE.md` har sessiyaga, shu jumladan har bir subagentga avtomatik yuklanadi. Shuning uchun u **yadro** holida saqlanadi (skelet holati, arxitektura, javob kontrakti, kod uslubi), qolgani mavzu bo'yicha ajratilgan:
+
+| Fayl                | Kim o'qiydi    | Nima bor                                                             |
+| ------------------- | -------------- | -------------------------------------------------------------------- |
+| `docs/backend.md`   | `back`         | Javob formati, xato maskalash, validatsiya, env, `/health`, mongoose |
+| `docs/structure.md` | `arch`         | Papka kartasi, alias'lar (uch joy), ulash nuqtalari, nomlash         |
+| `docs/testing.md`   | `tester`       | Test infratuzilmasi va uning uchta nozik joyi                        |
+| `docs/tooling.md`   | asosiy sessiya | Script'lar, husky hook'lari, ESLint konfiguratsiyasi                 |
+
+Har agentning promptida **o'z faylini o'qi, boshqalarnikini o'qima** deb yozilgan. Har fakt aynan bitta faylda turadi — agent promptlari ham shu hujjatlarni takrorlamaydi, ularga havola qiladi.
+
+### `arch` qanday bo'shliqni to'ldiradi
+
+`/scaffold` strukturaviy ulash qoidalarini **faqat yangi entity uchun** qoplaydi (6 qatlam + barrel + `server.ts` registratsiyasi). Entity bo'lmagan qo'shimchalar — yangi middleware, util, config, yoki `jobs/` kabi cross-cutting papka — hech kimning mas'uliyatida emas edi: `back` mavjud qatlamga kod yozadi, `lead` esa vazifalarni bo'ladi, joylashuvni hal qilmaydi.
+
+`arch` shu qarorni beradi va uchta doimiy tuzoqni tekshiradi: alias **uch joyda** (`tsconfig.json`, `.swcrc`, barrel) e'lon qilinganmi, yangi fayl barrel'da eksportmi, router `server.ts` da ro'yxatdanmi. Auditi struktura bilan cheklangan — tiplar, build va HTTP kontrakti `/verify` da qoladi.
 
 ### `tester` infratuzilmasi
 
