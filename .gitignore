@@ -1,11 +1,67 @@
+# Bog'liqliklar
 /node_modules
+
+# Muhit o'zgaruvchilari - hech qachon commit qilinmaydi.
+# Root uchun ham, ichki papkalar uchun ham (`/` prefiksi faqat root'ga tegishli).
+.env
+.env.*
 /.env*
+# Istisnolar: sirlarsiz shablon va jamoa uchun bir xil test muhiti.
 !/.env.example
-# Test muhiti sirlarsiz va jamoa uchun bir xil bo'lishi shart - commit qilinadi.
 !/.env.test
-/process.txt
+
+# Sertifikat, kalit va hisob ma'lumotlari
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+.npmrc
+.netrc
+credentials.json
+service-account*.json
+serviceAccount*.json
+secrets.json
+*.kubeconfig
+
+# Build va hisobotlar
 /dist
+/build
 /coverage
+*.tsbuildinfo
+
+# Loglar va vaqtinchalik fayllar
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+/logs
+/tmp
+/.tmp
+/.cache
+/process.txt
+
+# Deploy platformalari
+/.vercel
+/.serverless
+/.terraform
+*.tfstate
+*.tfstate.*
+
+# OS va muharrir
+.DS_Store
+Thumbs.db
+desktop.ini
+/.idea
+/.vscode
+*.swp
+*~
 
 # Claude Code - shaxsiy sozlamalar
 .claude/settings.local.json
+.claude/*.local.json
