@@ -4,6 +4,58 @@ Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi. **Har bajarilgan is
 
 ---
 
+## 2026-09-02 — Odam uchun dokumentatsiya: `README.md` va interaktiv OpenAPI (`/docs`)
+
+**Maqsad:** loyihada odam-dasturchi uchun kirish nuqtasi yo'q edi — barcha hujjatlar (`CLAUDE.md`, `docs/*.md`, `.claude/README.md`) agentlar uchun yozilgan, `PROGRESS.md` esa ichki jurnal. Repo GitHub'da turibdi, lekin "bu nima, qanday ishga tushiraman, qanday endpointlar bor" savollariga javob hech qayerda yig'ilmagan. Ikkinchi bo'shliq — 10 ta route bor, ammo ularning kontrakti (so'rov/javob sxemalari) hujjatlanmagan.
+
+**Yaratilgan fayllar:**
+
+- `README.md` — o'zbekcha, odam uchun: texnologiyalar jadvali, skelet holati ogohlantirishi, talablar, tez boshlash, env jadvali, skriptlar, struktura + mermaid oqim diagrammasi, javob formati, endpointlar jadvali, yangi entity qo'shish retsepti, testlar, agent hujjatlariga havolalar.
+- `src/openapi/components.openapi.ts` — qayta ishlatiladigan sxemalar (`Product`, `CreateProduct`, `UpdateProduct`, `HealthStatus`, `SuccessEnvelope`, `ErrorEnvelope`) va `successResponse()` / `errorResponse()` yordamchilari.
+- `src/openapi/paths.openapi.ts` — 10 ta endpoint; `user` endpointlari skelet ekani `description` da aytilgan.
+- `src/openapi/spec.openapi.ts` — `OpenAPIV3.Document`, `servers` `env.HOST`/`env.PORT` dan quriladi.
+- `src/openapi/index.ts` — barrel.
+- `src/routers/swagger.router.ts` — `Routes` implementatsiyasi: `GET /docs/openapi.json` va `/docs` da Swagger UI.
+- `test/swagger.router.test.ts` — 6 test.
+
+**O'zgargan fayllar:** `src/server.ts` (`routes` massivi + shartli `SwaggerRouter`), `src/routers/index.ts`, `tsconfig.json` va `.swcrc` (`@openapi` alias), `package.json` (metadata + 3 ta paket), `CLAUDE.md`, `docs/structure.md`, `docs/backend.md`.
+
+**Qarorlar va sabablari:**
+
+- **`swagger-jsdoc` ishlatilmadi.** Odatiy yondashuvda `@openapi` JSDoc bloklari router fayllariga yoziladi — bu loyihaning "kod ichida izoh yozilmaydi" qoidasiga zid va `product.router.ts` ni 25 qatordan ~150 qatorga shishirardi. Spesifikatsiya alohida TS modulida turadi, `openapi-types` bilan tiplangan — shu sababli `npm run type-check` hujjatdagi xatoni ham tutadi.
+- **OpenAPI 3.1 emas, 3.0.3.** Avval 3.1 yozildi, lekin `openapi-types` ning `OpenAPIV3_1.PathItemObject` tipi `OpenAPIV3` operatsiya tiplari bilan kesishadi (`Modify<>` faqat `servers`/`parameters` ni almashtiradi), natijada har bir `responses` bloki ikkala versiyaga bir vaqtda mos kelishi talab qilinardi va `tsc` yiqilardi. 3.0.3 da tiplar izchil; Swagger UI, Postman va codegen vositalari uni to'liq qo'llaydi. `type: 'null'` o'rniga `nullable: true` ishlatildi.
+- **`GET /docs/openapi.json` javob konvertiga o'ralmaydi.** Bu qoida №1 dan ataylab qilingan yagona istisno: Swagger UI, Postman va codegen spesifikatsiyani standart shaklda kutadi, `{ success, message, data }` ichiga solinsa hech bir vosita o'qiy olmaydi. `docs/backend.md` ga yozib qo'yildi.
+- **`/docs` prod'da ro'yxatdan o'tmaydi.** `src/server.ts` da `env.NODE_ENV !== 'prod'` sharti — prod'da `/docs` catch-all orqali `404` beradi. Sabab `error.middleware.ts` dagi maskalash falsafasi bilan bir xil: prod tashqi kuzatuvchiga kamroq ichki tafsilot ko'rsatishi kerak.
+- **Route'ga xoslangan CSP.** `app.ts` dagi global `helmet()` `script-src 'self'` qo'yadi, Swagger UI esa inline skript bilan ishga tushadi — natijada sahifa bo'sh oq chiqadi. Global helmet yumshatilmadi; `swagger.router.ts` ichida faqat shu router uchun `helmet.contentSecurityPolicy({...})` qo'yildi (`unsafe-inline` skript va stil uchun). Test CSP sarlavhasini tekshiradi.
+- **Drift-guard testi.** Hujjatning eskirishi jimgina sodir bo'ladigan xato, shuning uchun `test/swagger.router.test.ts` router stack'idan haqiqiy route'larni yig'ib, spesifikatsiya bilan **ikki tomonlama** solishtiradi: kodda bor-u hujjatda yo'q ham, hujjatda bor-u kodda yo'q ham testni yiqitadi.
+- **Yangi papka nomi `src/openapi/`, `src/docs/` emas** — ildizdagi `docs/` (agent hujjatlari) bilan chalkashmasligi uchun. Alias qoidasiga muvofiq `tsconfig.json` + `.swcrc` + barrel — uchalasi yangilandi.
+- **`CONTRIBUTING.md` va `LICENSE` yozilmadi** — foydalanuvchi qamrovni `README` + `package.json` metadata bilan cheklashni tanladi.
+- **Yangi kodga izoh yozilmadi** — mavjud test fayllarida tushuntiruvchi bloklar bo'lsa-da, "kod ichida izoh yozilmaydi" qoidasi qo'llanildi; sabablar shu yozuvda.
+
+**`arch` auditi va uning natijasida qilingan tuzatishlar:**
+
+Swagger qo'shilgach struktura `arch` agentiga tekshirtirildi. Alias sinxronligi, qatlam chegaralari (`@config` — barg modul, sikl yo'q; `router → @openapi` to'g'ri yo'nalish), nisbiy importlar va `server.ts` dagi shartli ro'yxatdan o'tish toza chiqdi. Beshta haqiqiy kamchilik topildi va tuzatildi:
+
+- **Fayl nomlari konvensiyaga zid edi.** Butun `src/` da naqsh `<mavzu>.<papka-nomi-birlikda>.ts` (`env.config.ts`, `mongo.database.ts`, `http.exception.ts`), yangi fayllar esa teskari yozilgan edi. Qayta nomlandi: `openapi.spec.ts` → `spec.openapi.ts`, `openapi.paths.ts` → `paths.openapi.ts`, `openapi.components.ts` → `components.openapi.ts`. Qo'shimcha foyda: `.spec.ts` — Vitest'ning standart test suffiksi; `vitest.config.mts` dagi `include` hozir tor bo'lgani uchun to'qnashuv yo'q edi, lekin u default'ga qaytarilsa Vitest bu faylni test deb yig'ib yiqilardi.
+- **`/scaffold` buzilgan holatda qolgan edi.** `.claude/commands/scaffold.md` faqat barrel va `server.ts` ni ulash nuqtasi deb sanardi; bugun `/scaffold Order` bajarilsa entity ishlar, ammo drift-guard testi qizil bo'lardi. 9-qadam (OpenAPI paths + components) qo'shildi, 8-qadam snippeti `routes` massiviga moslandi, "Yakunda" ga `npm test` qo'shildi — parity buzilishi faqat testda bilinadi.
+- **Testdagi qo'lda yozilgan router ro'yxati to'rtinchi ulash nuqtasi edi.** Hujjatlash o'rniga sabab yo'q qilindi: test endi `@routers` barrel'idan hamma router'ni avtomatik instansiyalaydi (`SwaggerRouter` chetlab o'tiladi — u o'zini hujjatlamaydi). Yangi router qo'shilsa test uni o'zi ko'radi.
+- **`docs/structure.md` nomlash jadvali istisnosiz yozilgan edi** — unga ko'ra `openapi/` (birlikda) va uning fayl nomlari xato bo'lib ko'rinardi. `<layer>` suffiksi qatori qo'shildi, papka nomlash qatoriga `config/`, `database/`, `openapi/` istisnolari yozildi. `src/openapi/index.ts` ning ataylab to'liq emasligi (faqat `openapiSpec` chiqadi, helperlar ichki quruvchi bo'lib qoladi) ham qayd etildi.
+- **Prod'dagi `/docs` → `404` xulqi hech qayerda tekshirilmasdi.** Test router'ni to'g'ridan-to'g'ri mount qilgani uchun `server.ts` guard'ini chetlab o'tadi. `.claude/commands/verify.md` ga `/docs` qatorlari va prod bosqichiga aniq tekshiruv qo'shildi.
+
+Shuningdek `CLAUDE.md` ning 3-qoidasiga uchinchi ulash nuqtasi (`yangi endpoint → paths.openapi.ts`), `docs/testing.md` ga drift-guard testining tavsifi, `docs/backend.md` ga sxema cheklovlari DTO'dan qo'lda ko'chirilgani haqidagi ogohlantirish yozildi.
+
+`arch` ning `swagger-ui-express` `dependencies` da qolishi kerakligi haqidagi kuzatuvi to'g'ri va o'zgartirilmadi: `SwaggerRouter` `@routers` barrel'idan shartsiz eksport qilinadi, ya'ni prod'da ham modul yuklanadi — `devDependencies` ga ko'chirilsa prod boot `MODULE_NOT_FOUND` bilan o'lardi.
+
+**Verifikatsiya:**
+
+- `npm run type-check` — ikkala konfiguratsiya ham xatosiz.
+- `npm test` — 7 fayl / 98 test o'tdi (avvalgi 92 + yangi 6).
+- `npm run lint` — toza.
+- Jonli smoke-test (`tsx src/server.ts`, dev, `PORT=5055`): `GET /health` → `200`; `GET /docs/openapi.json` → `200`, `openapi: 3.0.3`, konvertsiz, 5 ta path; `GET /docs/` → `200` `text/html`, sahifada `swagger-ui` bor; `POST /products` → `201`; `DELETE /products/:id` → `200 deleted`; begona maydon + manfiy narx → `400 "property hacker should not exist, price must not be less than 0"`.
+- Prod tekshiruvi (`NODE_ENV=prod`, `PORT=5056`): `GET /health` → `200` (`env: prod`), `GET /docs/` va `GET /docs/openapi.json` → `404 Route ... not found`.
+
+---
+
 ## 2026-08-31 — `Product` entity'si: birinchi to'liq CRUD vertikali
 
 **Maqsad:** skelet ustiga birinchi haqiqiy domen entity'sini qo'shish — `Product` (nomi, narxi, ishlab chiqaruvchi nomi) uchun to'liq CRUD: interface → model → dto → service → controller → router.
