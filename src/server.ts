@@ -1,10 +1,10 @@
 import { App } from '@/app';
-import { UserRouter, HealthRouter } from '@routers';
+import { UserRouter, HealthRouter, ProductRouter } from '@routers';
 
 async function bootstrap() {
     try {
         // Server
-        const app = new App([new UserRouter(), new HealthRouter()]);
+        const app = new App([new UserRouter(), new HealthRouter(), new ProductRouter()]);
         await app.initialize();
         app.listen();
         // ----------------------------------------------
