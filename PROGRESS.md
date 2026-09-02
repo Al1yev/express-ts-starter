@@ -4,6 +4,41 @@ Bajarilgan ishlar jurnali. Yangi yozuvlar tepaga qo'shiladi. **Har bajarilgan is
 
 ---
 
+## 2026-08-31 — `Product` entity'si: birinchi to'liq CRUD vertikali
+
+**Maqsad:** skelet ustiga birinchi haqiqiy domen entity'sini qo'shish — `Product` (nomi, narxi, ishlab chiqaruvchi nomi) uchun to'liq CRUD: interface → model → dto → service → controller → router.
+
+**Yaratilgan fayllar:**
+
+- `src/interfaces/product.interface.ts` — `name: string`, `price: number`, `manufacturer: string` + `_id?`, `createdAt?`, `updatedAt?`.
+- `src/models/product.model.ts` — `ProductDocument = HydratedDocument<Product>`; `name`/`manufacturer` `required` + `trim` + `maxlength: 200`, `price` `required` + `min: 0`; `timestamps: true`, `toJSON` da `__v` olib tashlanadi.
+- `src/dtos/product.dto.ts` — `CreateProductDto`: `@IsString @IsNotEmpty @MaxLength(200)`, `@IsNumber @Min(0)`.
+- `src/services/product.service.ts` — `@Service()` bilan to'liq implementatsiya (`findAllProduct`, `createProduct`, `findProductById`, `updateProduct`, `deleteProduct`).
+- `src/controllers/product.controller.ts` — 5 ta metod, har biri `try/catch` + `next(error)`, javob `res.success(...)`.
+- `src/routers/product.router.ts` — `path = '/products'`; `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id`.
+- `test/product.service.test.ts` (18 test) va `test/product.router.test.ts` (16 test).
+
+**O'zgargan fayllar:** oltala barrel (`src/{interfaces,models,dtos,services,controllers,routers}/index.ts`) va `src/server.ts` — `new App([new UserRouter(), new HealthRouter(), new ProductRouter()])`.
+
+**Qarorlar va sabablari:**
+
+- **`qiymati` → `price: number`.** Talab o'zbekcha "qiymati" deb berilgan; foydalanuvchi bilan aniqlashtirilib, narx (`number`, `min: 0`) sifatida talqin qilindi — matnli `value` emas.
+- **Alohida `UpdateProductDto` yaratilmadi.** `user.router.ts` dagi naqsh takrorlandi: `ValidationMiddleware(CreateProductDto, true)` — `skipMissingProperties` qisman `PUT` ni qoplaydi, `whitelist`/`forbidNonWhitelisted` esa kuchda qoladi. Ikkinchi DTO qo'shilsa validatsiya qoidalari ikki joyda dublikat bo'lardi.
+- **`unique` indeks qo'yilmadi.** Talabda bir xil nomli mahsulot taqiqlanishi aytilmagan; `unique` qo'shilsa `409` konflikt yo'li va `E11000` ni maskalash ham kerak bo'lardi.
+- **Skelet `eslint-disable` sarlavhasi ko'chirilmadi.** `docs/backend.md` ga muvofiq u faqat implementatsiya qilinmagan service uchun; `product.service.ts` da logika bor, ishlatilmagan parametr yo'q.
+- **`user.*` skeletiga tegilmadi.** `CLAUDE.md` qoidasi: skelet ataylab bo'sh; `GET /users` hamon `500 Not implemented` qaytaradi.
+- **Xato kodlari:** topilmadi → `HttpException(404, "Product doesn't exist")` service qatlamida; `DELETE` → `200` va o'chirilgan hujjat (`204` ishlatilmaydi); `findByIdAndUpdate` `{ new: true, runValidators: true }` bilan.
+- **Controller `@models` dan import qilmaydi** — tiplar `@interfaces` dagi `Product` dan olinadi, mongoose tipi service qatlamida to'xtaydi.
+- **Alias konfiguratsiyasi o'zgartirilmadi** — oltala papka `tsconfig.json` va `.swcrc` da allaqachon e'lon qilingan, yangi papka qo'shilmadi.
+
+**Verifikatsiya:**
+
+- `npm run type-check` — `tsc --noEmit` va `tsc -p tsconfig.test.json` ikkalasi ham xatosiz.
+- `npm test` — 6 fayl / 92 test o'tdi (avvalgi 58 + yangi 34); mavjud `infrastructure.test.ts` va `health.router.test.ts` yiqilmadi.
+- `npm run lint` — toza.
+
+---
+
 ## 2026-08-31 — `baseUrl` olib tashlandi, `paths` tsconfig'ga nisbatan yozildi
 
 **Muammo:** yangi TypeScript (6.x) yana bir deprecation xatosi bergan: `Option 'baseUrl' is deprecated and will stop functioning in TypeScript 7.0`. Bu quyidagi `moduleResolution` migratsiyasi bilan bir turkumdagi ish.
