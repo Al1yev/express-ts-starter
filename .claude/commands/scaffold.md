@@ -27,7 +27,10 @@ Har birini mavjud `user.*` fayllaridan nusxa ol — ular shu loyihaning namunasi
 ## Ulash — buni unutish eng ko'p uchraydigan xato
 
 7. Har bir papkaning `index.ts` barrel faylini yangila (`src/interfaces/index.ts`, `src/models/index.ts`, va hokazo) — alias import'lar (`@models`) shu barrel'lar orqali ishlaydi.
-8. `src/server.ts` da router'ni ro'yxatdan o'tkaz: `new App([new UserRouter(), new <Name>Router()])`.
+8. `src/server.ts` da router'ni ro'yxatdan o'tkaz — u yerda `routes` massivi bor, yangi router'ni shunga qo'sh: `const routes: Routes[] = [new UserRouter(), ..., new <Name>Router()];`. (`SwaggerRouter` shu massivga faqat `env.NODE_ENV !== 'prod'` bo'lganda qo'shiladi — unga tegma.)
+9. `src/openapi/paths.openapi.ts` ga entity'ning **barcha** route'larini yoz, sxemasini esa `src/openapi/components.openapi.ts` ga qo'sh. Buni unutsang `test/swagger.router.test.ts` dagi ikki tomonlama parity tekshiruvi yiqiladi — u router stack'ini spesifikatsiya bilan solishtiradi.
+
+Router'lar ro'yxatini qo'lda yuritish kerak emas: test `@routers` barrel'idan hamma router'ni avtomatik oladi.
 
 ## Konvensiyalar (buzma)
 
@@ -40,4 +43,4 @@ Har birini mavjud `user.*` fayllaridan nusxa ol — ular shu loyihaning namunasi
 
 ## Yakunda
 
-`npm run type-check` va `npm run lint` ni ishga tushir — ikkalasi ham xatosiz o'tishi shart. Keyin `PROGRESS.md` ga qisqa yozuv qo'sh: qaysi entity qo'shildi va qaysi fayllar yaratildi.
+`npm run type-check`, `npm run lint` va `npm test` ni ishga tushir — uchalasi ham xatosiz o'tishi shart. `npm test` majburiy, chunki OpenAPI parity tekshiruvi (9-qadam) faqat shu yerda bilinadi. Keyin `PROGRESS.md` ga qisqa yozuv qo'sh: qaysi entity qo'shildi va qaysi fayllar yaratildi.

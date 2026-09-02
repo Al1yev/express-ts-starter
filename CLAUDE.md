@@ -31,7 +31,7 @@ router → controller → service → model
 
 1. **Javob formati** har doim `{ success, message, data }` — `res.success(...)` yoki `throw new HttpException(status, message)`. **`204` ishlatilmaydi**, `DELETE` uchun `200`.
 2. **Import'lar path alias orqali** (`@services`, `@models`, ...), nisbiy yo'l bilan emas. Alias **uch joyda** e'lon qilinadi va sinxron turadi.
-3. **Yangi fayl o'z papkasining `index.ts` barreliga** qo'shiladi, yangi router esa `src/server.ts` dagi `new App([...])` massiviga. Bularni unutish eng ko'p uchraydigan xato.
+3. **Yangi fayl o'z papkasining `index.ts` barreliga** qo'shiladi, yangi router esa `src/server.ts` dagi `routes` massiviga, **yangi endpoint esa `src/openapi/paths.openapi.ts` ga**. Bularni unutish eng ko'p uchraydigan xato — oxirgisi `npm test` ni yiqitadi.
 4. **Kod uslubi:** 4 space indent, single quotes, trailing comma `all`, printWidth 100, semicolon majburiy (`.prettierrc.json`).
 
 O'zgarish kiritgach `npm run type-check`, testga tegilgan bo'lsa `npm test` — ikkalasi ham xatosiz o'tishi shart.
@@ -40,6 +40,8 @@ O'zgarish kiritgach `npm run type-check`, testga tegilgan bo'lsa `npm test` — 
 
 | Mavzu                                                                | Fayl                                       | Kim o'qiydi    |
 | -------------------------------------------------------------------- | ------------------------------------------ | -------------- |
+| Loyihaga kirish: o'rnatish, skriptlar, API ro'yxati                  | [README.md](./README.md)                   | odam           |
+| HTTP kontrakti (OpenAPI manbasi, `/docs` Swagger UI)                 | `src/openapi/`                             | `back`, `arch` |
 | Javob formati, xato maskalash, validatsiya, env, `/health`, mongoose | [`docs/backend.md`](./docs/backend.md)     | `back`         |
 | Papka kartasi, alias'lar, barrel, ulash nuqtalari, nomlash           | [`docs/structure.md`](./docs/structure.md) | `arch`         |
 | Test infratuzilmasi va uning tuzoqlari                               | [`docs/testing.md`](./docs/testing.md)     | `tester`       |

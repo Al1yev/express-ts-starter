@@ -10,6 +10,10 @@ Har doim `{ success, message, data }`:
 - Xato: `throw new HttpException(status, message)` — `ErrorMiddleware` ushlaydi
 - `204` ishlatmang — Express body'ni tashlab yuboradi va javob formati buziladi. `DELETE` uchun `200`.
 
+Yagona istisno — `GET /docs/openapi.json`: xom OpenAPI hujjatini qaytaradi, konvertga o'ralmaydi. Sabab: Swagger UI, Postman va codegen vositalari spesifikatsiyani standart shaklda kutadi. Yangi endpoint qo'shsangiz uni `src/openapi/paths.openapi.ts` da ham hujjatlang — `test/swagger.router.test.ts` ikki tomonlama moslikni tekshiradi.
+
+`src/openapi/components.openapi.ts` dagi sxema cheklovlari (`maxLength: 200`, `minimum: 0`) DTO'dan **qo'lda ko'chirilgan** va avtomatik sinxronlanmaydi. Bu ataylab: `openapi/` `@dtos` ga bog'lanmaydi, aks holda hujjat qatlami validatsiya qatlamining ichki tuzilishiga bog'lanib qolardi. Drift-guard testi faqat path/method moslikni ushlaydi — DTO cheklovini o'zgartirsangiz sxemani ham qo'lda yangilang.
+
 Status kodlarini mantiqan tanlang: topilmadi = `404`, konflikt/dublikat = `409`, yaroqsiz kirish = `400`, autentifikatsiya = `401`, ruxsat = `403`.
 
 ## Xatolar

@@ -35,6 +35,14 @@ Qo'shimcha: har worker o'z bazasida ishlaydi (`test_<pid>`), shuning uchun `clea
 
 Integratsiya testida `app.listen()` chaqirmang: `createTestApp([new SomeRouter()])` → `supertest(app)`. To'liq app orqali o'tish shart, chunki `res.success()` va 404/error kontrakti middleware'larda yig'iladi. Faqat service'ni test qilayotgan bo'lsangiz app kerak emas — `connectTestDb()` yetadi.
 
+## OpenAPI drift-guard (`test/swagger.router.test.ts`)
+
+Bu testning oxirgi bloki odatdagi integratsiya testi emas: u `@routers` barrel'idagi **hamma** router'ni avtomatik instansiyalab (`SwaggerRouter` dan tashqari — u o'zini hujjatlamaydi), Express router stack'idan haqiqiy yo'llarni yig'adi va `openapiSpec` bilan **ikki tomonlama** solishtiradi.
+
+- Router ro'yxatini qo'lda yuritish **kerak emas** — barrel manba. Yangi router qo'shilsa test uni o'zi ko'radi.
+- Yangi endpoint `src/openapi/paths.openapi.ts` da hujjatlanmasa test yiqiladi. Bu kutilgan xulq: tuzatish yo'li — testni emas, spesifikatsiyani yangilash.
+- `/docs` ning prod'da `404` bo'lishi bu yerda **tekshirilmaydi** (test router'ni to'g'ridan-to'g'ri mount qiladi, `server.ts` guard'ini chetlab o'tadi). U `/verify` ning qo'lda bosqichida.
+
 ## Lint va testlar
 
 `no-unsafe-*` oilasi `test/` da o'chirilgan: `supertest` javobining `body` tipi `any` (`@types/superagent`) — bu kutubxona chegarasi, bizning kodimiz emas. `src/` da qoida kuchida.

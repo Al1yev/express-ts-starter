@@ -6,10 +6,10 @@ Kim o'qiydi: **`arch` agenti** va yangi fayl/papka qo'shadigan har qanday ish. U
 
 Ildizdagi ikki fayl qatlamlarga kirmaydi:
 
-| Fayl            | Nima uchun muhim                                                                           |
-| --------------- | ------------------------------------------------------------------------------------------ |
-| `src/app.ts`    | `App` klassi: middleware zanjiri, router'larni ulash, 404 va error handling                |
-| `src/server.ts` | `bootstrap()`: `new App([...])` — **yangi router shu massivga qo'shilmasa, endpoint yo'q** |
+| Fayl            | Nima uchun muhim                                                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app.ts`    | `App` klassi: middleware zanjiri, router'larni ulash, 404 va error handling                                                                                               |
+| `src/server.ts` | `bootstrap()`: `routes` massivi → `new App(routes)` — **yangi router shu massivga qo'shilmasa, endpoint yo'q**. `SwaggerRouter` faqat `NODE_ENV !== 'prod'` da qo'shiladi |
 
 Qatlam papkalari — har birida `index.ts` barrel va o'z alias'i:
 
@@ -23,15 +23,18 @@ Qatlam papkalari — har birida `index.ts` barrel va o'z alias'i:
 | `interfaces/`  | Tiplar va interface'lar (`Routes`, entity interface'lari) |
 | `middlewares/` | Express middleware'lari (error, response, validation)     |
 | `models/`      | Mongoose schema'lar                                       |
+| `openapi/`     | OpenAPI hujjati (`spec.openapi.ts` va uning bo'laklari)   |
 | `routers/`     | Yo'llar va middleware zanjiri                             |
 | `services/`    | Biznes logikasi, `@Service()` bilan DI                    |
 | `utils/`       | Qatlamga bog'liq bo'lmagan sof funksiyalar                |
 
 Testlar `src/` da emas, `test/` da: `*.test.ts`, yordamchilar `test/helpers/`.
 
+`src/openapi/index.ts` **ataylab to'liq emas**: faqat `openapiSpec` chiqadi. `schemas`, `paths`, `successResponse()`, `errorResponse()` — ichki quruvchilar; barrel'ga chiqarilsa papkadan tashqarida spesifikatsiya bo'laklari yasashga yo'l ochilardi va modul chegarasi oqardi.
+
 ## Path alias'lar
 
-`@config`, `@controllers`, `@database`, `@dtos`, `@exceptions`, `@interfaces`, `@middlewares`, `@models`, `@routers`, `@services`, `@utils` — har biri o'z papkasidagi `index.ts` ga. `@/*` → `src/*`.
+`@config`, `@controllers`, `@database`, `@dtos`, `@exceptions`, `@interfaces`, `@middlewares`, `@models`, `@openapi`, `@routers`, `@services`, `@utils` — har biri o'z papkasidagi `index.ts` ga. `@/*` → `src/*`.
 
 Alias'lar **uch joyda** e'lon qilingan va sinxron turishi shart:
 
@@ -50,12 +53,13 @@ Import'lar **doim alias orqali** — papkalararo nisbiy yo'l (`../`) ishlatilmay
 
 ## Ulash nuqtalari — eng ko'p unutiladigan qadamlar
 
-| Nima qo'shildi   | Qayerga ulanadi                                                 |
-| ---------------- | --------------------------------------------------------------- |
-| Har qanday fayl  | O'z papkasining `index.ts` barreli                              |
-| Yangi router     | `src/server.ts` dagi `new App([...])` massivi                   |
-| Yangi middleware | `src/app.ts` dagi `initializeMiddlewares()`                     |
-| Yangi papka      | `tsconfig.json` + `.swcrc` + barrel, so'ng shu faylni yangilash |
+| Nima qo'shildi   | Qayerga ulanadi                                                                   |
+| ---------------- | --------------------------------------------------------------------------------- |
+| Har qanday fayl  | O'z papkasining `index.ts` barreli                                                |
+| Yangi router     | `src/server.ts` dagi `routes` massivi                                             |
+| Yangi endpoint   | `src/openapi/paths.openapi.ts` — aks holda `test/swagger.router.test.ts` yiqiladi |
+| Yangi middleware | `src/app.ts` dagi `initializeMiddlewares()`                                       |
+| Yangi papka      | `tsconfig.json` + `.swcrc` + barrel, so'ng shu faylni yangilash                   |
 
 ### Router prefiksi — kim qo'yadi
 
@@ -79,12 +83,13 @@ export class ProductRouter implements Routes {
 
 ## Nom konvensiyalari
 
-| Nima                | Qanday                                         |
-| ------------------- | ---------------------------------------------- |
-| Fayl                | `camelCase.<layer>.ts` — `product.service.ts`  |
-| Klass / interface   | `PascalCase` — `ProductService`, `Product`     |
-| Route               | `kebab-case`, ko'plikda — `/products`          |
-| Mongoose model nomi | `PascalCase`, birlikda — `'Product'`           |
-| Papka va alias      | ko'plikda, bir xil — `services/` → `@services` |
+| Nima                | Qanday                                                                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Fayl                | `camelCase.<layer>.ts` — `product.service.ts`                                                                                                    |
+| `<layer>` suffiksi  | papka nomining birlik shakli — `config/` → `env.config.ts`, `openapi/` → `spec.openapi.ts`                                                       |
+| Klass / interface   | `PascalCase` — `ProductService`, `Product`                                                                                                       |
+| Route               | `kebab-case`, ko'plikda — `/products`                                                                                                            |
+| Mongoose model nomi | `PascalCase`, birlikda — `'Product'`                                                                                                             |
+| Papka va alias      | bir xil nomda; entity qatlamlari ko'plikda — `services/` → `@services`. Sanab bo'lmaydigan mavzular birlikda: `config/`, `database/`, `openapi/` |
 
 Yangi entity uchun butun vertikalni `/scaffold <EntityName>` yaratadi — qo'lda qatlam-qatlam yozib chiqmang.

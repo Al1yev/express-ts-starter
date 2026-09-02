@@ -38,13 +38,18 @@ Mongo'ni to'xtat (`docker stop mongo`) va serverni qayta ishga tushir. Server `l
 
 Server ko'tarilgan holda:
 
-| So'rov                         | Kutilgan                                                                       |
-| ------------------------------ | ------------------------------------------------------------------------------ |
-| `GET /yoq-route`               | `404` + `{"success":false,"message":"Route /yoq-route not found","data":null}` |
-| `POST /users` (ixtiyoriy body) | `400` — pastdagi eslatmaga qara                                                |
-| `GET /users`                   | `500` — dev'da haqiqiy xabar, prod'da `Internal server error`                  |
+| So'rov                         | Kutilgan                                                                            |
+| ------------------------------ | ----------------------------------------------------------------------------------- |
+| `GET /yoq-route`               | `404` + `{"success":false,"message":"Route /yoq-route not found","data":null}`      |
+| `POST /users` (ixtiyoriy body) | `400` — pastdagi eslatmaga qara                                                     |
+| `GET /users`                   | `500` — dev'da haqiqiy xabar, prod'da `Internal server error`                       |
+| `GET /docs/openapi.json`       | `200`, xom OpenAPI JSON — konvertga **o'ralmaydi** (ataylab qilingan istisno)       |
+| `GET /docs/`                   | `200` `text/html`, sahifa haqiqatan render bo'ladi (bo'sh oq sahifa = CSP buzilgan) |
 
-Prod xulqini ham tekshir: `npx cross-env NODE_ENV=prod npx tsx src/server.ts` bilan qayta ishga tushirib, `GET /users` javobida ichki xato matni **oshkor bo'lmasligini** tasdiqla. Bu error middleware'ning asosiy vazifasi.
+Prod xulqini ham tekshir: `npx cross-env NODE_ENV=prod npx tsx src/server.ts` bilan qayta ishga tushirib, ikki narsani tasdiqla:
+
+1. `GET /users` javobida ichki xato matni **oshkor bo'lmasligi** — bu error middleware'ning asosiy vazifasi.
+2. `GET /docs/` va `GET /docs/openapi.json` → **`404`** (`Route ... not found`). `SwaggerRouter` prod'da ro'yxatdan o'tmaydi; bu xulq faqat shu yerda tekshiriladi, testlar bilan qoplanmagan (testlar router'ni to'g'ridan-to'g'ri mount qiladi).
 
 ## Kutilgan "g'alatiliklar" — bular bug emas
 
