@@ -37,6 +37,8 @@
             "@middlewares/*": ["middlewares/*"],
             "@models": ["models/index.ts"],
             "@models/*": ["models/*"],
+            "@openapi": ["openapi/index.ts"],
+            "@openapi/*": ["openapi/*"],
             "@routers": ["routers/index.ts"],
             "@routers/*": ["routers/*"],
             "@services": ["services/index.ts"],

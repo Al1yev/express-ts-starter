@@ -1,10 +1,18 @@
 import { App } from '@/app';
-import { UserRouter, HealthRouter, ProductRouter } from '@routers';
+import { env } from '@config';
+import { Routes } from '@interfaces';
+import { UserRouter, HealthRouter, ProductRouter, SwaggerRouter } from '@routers';
 
 async function bootstrap() {
     try {
         // Server
-        const app = new App([new UserRouter(), new HealthRouter(), new ProductRouter()]);
+        const routes: Routes[] = [new UserRouter(), new HealthRouter(), new ProductRouter()];
+
+        if (env.NODE_ENV !== 'prod') {
+            routes.push(new SwaggerRouter());
+        }
+
+        const app = new App(routes);
         await app.initialize();
         app.listen();
         // ----------------------------------------------
